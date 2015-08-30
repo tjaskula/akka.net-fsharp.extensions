@@ -7,7 +7,7 @@ module Lifecycle =
     open Akka.FSharp.Linq
     open Microsoft.FSharp.Linq
 
-    type LifetimeOverride =
+    type LifecycleOverride =
         {
             PreStart    : ((unit -> unit) -> unit) option;
             PostStop    : ((unit -> unit) -> unit) option;
@@ -17,7 +17,7 @@ module Lifecycle =
 
     let defOvrd = {PreStart = None; PostStop = None; PreRestart = None; PostRestart = None}
     
-    type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>, overrides : LifetimeOverride) as this =
+    type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>, overrides : LifecycleOverride) =
         inherit FunActor<'Message, 'Returned>(actor)
 
         member __.BasePreStart() = base.PreStart ()
@@ -56,7 +56,7 @@ module Lifecycle =
     /// <param name="options">List of options used to configure actor creation</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
     let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
-        (options : SpawnOption list) (overrides : LifetimeOverride) : IActorRef = 
+        (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef = 
         let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f, overrides))
         let props = applySpawnOptions (Props.Create e) options
         actorFactory.ActorOf(props, name)
@@ -70,5 +70,5 @@ module Lifecycle =
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
     let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
-        (overrides : LifetimeOverride) : IActorRef = 
+        (overrides : LifecycleOverride) : IActorRef = 
         spawnOptOvrd actorFactory name f [] overrides
