@@ -8,11 +8,11 @@ open System.Runtime.InteropServices
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [<assembly: AssemblyTitle("ComposeIt.Akka.FSharp.Extensions")>]
-[<assembly: AssemblyDescription("")>]
+[<assembly: AssemblyDescription("Additional extensions to the F# API of Akka.NET framework")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("")>]
+[<assembly: AssemblyCompany("Compose It")>]
 [<assembly: AssemblyProduct("ComposeIt.Akka.FSharp.Extensions")>]
-[<assembly: AssemblyCopyright("Copyright ©  2015")>]
+[<assembly: AssemblyCopyright("Copyright © 2015 Compose It")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 
