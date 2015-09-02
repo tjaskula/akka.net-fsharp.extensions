@@ -55,6 +55,7 @@
     <Compile Include="FsApi.Extensions.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
+    <None Include="Akka.FSharp.Extensions.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Akka">
