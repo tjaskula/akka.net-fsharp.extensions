@@ -72,6 +72,13 @@ Target "CreatePackage" (fun _ ->
             Summary = projectSummary
             WorkingDir = packagingDir
             Version = "1.0.0.0"
+            Dependencies =
+                ["Akka", GetPackageVersion "../packages/" "Akka"
+                 "Akka.FSharp", GetPackageVersion "../packages/" "Akka.FSharp"
+                 "FsPickler", GetPackageVersion "../packages/" "FsPickler"
+                 "FSPowerPack.Core.Community", GetPackageVersion "../packages/" "FSPowerPack.Core.Community"
+                 "FSPowerPack.Linq.Community", GetPackageVersion "../packages/" "FSPowerPack.Linq.Community"
+                 "Newtonsoft.Json", GetPackageVersion "../packages/" "Newtonsoft.Json"]
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" 
             ToolPath = toolPath}) 
