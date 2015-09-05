@@ -8,7 +8,7 @@ open Fake
 
 open System
 
-let authors = ["Tomasz Jaskula"]
+let authors = ["Tomasz Jaskula (Compose IT)"]
 
 // project name and description
 let projectName = "Akka.NET.FSharp.API.Extensions"
