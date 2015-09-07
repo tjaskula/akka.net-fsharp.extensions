@@ -23,6 +23,11 @@ let toolPath = "../packages/NuGet.CommandLine.2.8.6/tools/NuGet.exe"
 
 let buildMode = getBuildParamOrDefault "buildMode" "Release"
 
+MSBuildDefaults <- { 
+    MSBuildDefaults with 
+        ToolsVersion = Some "12.0"
+        Verbosity = Some MSBuildVerbosity.Minimal }
+
 Target "Clean" (fun _ ->
     CleanDirs [buildDir; packagingRoot; packagingDir]
 )
@@ -39,7 +44,7 @@ Target "Clean" (fun _ ->
 
 let setParams defaults = {
     defaults with
-        ToolsVersion = Some("14.0")
+        ToolsVersion = Some("12.0")
         Targets = ["Build"]
         Properties =
             [
