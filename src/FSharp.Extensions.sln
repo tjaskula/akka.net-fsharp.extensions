@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.Exten
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.Extensions.Tests", "ComposeIt.Akka.FSharp.Extensions.Tests\ComposeIt.Akka.FSharp.Extensions.Tests.fsproj", "{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E432BE18-36CF-48D2-BBB6-0CF0B2AB1A27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
