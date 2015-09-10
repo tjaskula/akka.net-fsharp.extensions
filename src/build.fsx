@@ -1,7 +1,7 @@
 ﻿// sets the current directory to be same as the script directory
 System.IO.Directory.SetCurrentDirectory (__SOURCE_DIRECTORY__)
 
-#r @"../../packages/FAKE/tools/FakeLib.dll"
+#r @"../packages/FAKE/tools/FakeLib.dll"
 #r "System.Configuration.dll"
 
 open Fake
@@ -16,10 +16,10 @@ let projectDescription = "Set of extensions to the Akka.NET F# API. Some feature
 let projectSummary = "Set of extensions to the Akka.NET F# API."
 
 // directories
-let buildDir = "./bin"
+let buildDir = "./ComposeIt.Akka.FSharp.Extensions/bin"
 let packagingRoot = "./packaging/"
-let packagingDir = packagingRoot @@ "AkkaFsharpExtensions"
-let toolPath = "../packages/NuGet.CommandLine.2.8.6/tools/NuGet.exe"
+let packagingDir = packagingRoot @@ "AkkaFSharpExtensions"
+let toolPath = "./packages/NuGet.CommandLine.2.8.6/tools/NuGet.exe"
 
 let buildMode = getBuildParamOrDefault "buildMode" "Release"
 
@@ -53,7 +53,7 @@ let setParams defaults = {
     }
 
 Target "BuildApp" (fun _ ->
-    build setParams "../FSharp.Extensions.sln"
+    build setParams "./FSharp.Extensions.sln"
         |> DoNothing
 )
 
@@ -78,12 +78,12 @@ Target "CreatePackage" (fun _ ->
             WorkingDir = packagingDir
             Version = "1.0.0.0"
             Dependencies =
-                ["Akka", GetPackageVersion "../packages/" "Akka"
-                 "Akka.FSharp", GetPackageVersion "../packages/" "Akka.FSharp"
-                 "FsPickler", GetPackageVersion "../packages/" "FsPickler"
-                 "FSPowerPack.Core.Community", GetPackageVersion "../packages/" "FSPowerPack.Core.Community"
-                 "FSPowerPack.Linq.Community", GetPackageVersion "../packages/" "FSPowerPack.Linq.Community"
-                 "Newtonsoft.Json", GetPackageVersion "../packages/" "Newtonsoft.Json"]
+                ["Akka", GetPackageVersion "./packages/" "Akka"
+                 "Akka.FSharp", GetPackageVersion "./packages/" "Akka.FSharp"
+                 "FsPickler", GetPackageVersion "./packages/" "FsPickler"
+                 "FSPowerPack.Core.Community", GetPackageVersion "./packages/" "FSPowerPack.Core.Community"
+                 "FSPowerPack.Linq.Community", GetPackageVersion "./packages/" "FSPowerPack.Linq.Community"
+                 "Newtonsoft.Json", GetPackageVersion "./packages/" "Newtonsoft.Json"]
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" 
             ToolPath = toolPath}) 
