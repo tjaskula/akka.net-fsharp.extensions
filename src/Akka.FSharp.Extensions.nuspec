@@ -6,7 +6,7 @@
     <authors>@authors@</authors>
     <owners>@authors@</owners>
     <summary>@summary@</summary>
-    <licenseUrl>https://github.com/tjaskula/akka.net-fsharp.extensions/master/LICENSE.txt</licenseUrl>
+    <licenseUrl>https://github.com/tjaskula/akka.net-fsharp.extensions/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/tjaskula/akka.net-fsharp.extensions</projectUrl>
     <iconUrl>https://github.com/tjaskula/akka.net-fsharp.extensions</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
