@@ -32,16 +32,6 @@ Target "Clean" (fun _ ->
     CleanDirs [buildDir; packagingRoot; packagingDir]
 )
 
-//open Fake.AssemblyInfoFile
-//
-//Target "AssemblyInfo" (fun _ ->
-//    CreateCSharpAssemblyInfo "./SolutionInfo.cs"
-//      [ Attribute.Product projectName
-//        Attribute.Version releaseNotes.AssemblyVersion
-//        Attribute.FileVersion releaseNotes.AssemblyVersion
-//        Attribute.ComVisible false ]
-//)
-
 let setParams defaults = {
     defaults with
         ToolsVersion = Some("12.0")
@@ -60,9 +50,8 @@ Target "BuildApp" (fun _ ->
 Target "CreatePackage" (fun _ ->
 
     let net45Dir = packagingDir @@ "lib/net45/"
-//    let netcore45Dir = packagingDir @@ "lib/netcore45/"
-//    let portableDir = packagingDir @@ "lib/portable-net45+wp80+win+wpa81/"
-    CleanDirs [net45Dir(*; netcore45Dir; portableDir*)]
+
+    CleanDirs [net45Dir]
 
     CopyFile net45Dir (buildDir @@ "Release/ComposeIt.Akka.FSharp.Extensions.dll")
     CopyFile net45Dir (buildDir @@ "Release/ComposeIt.Akka.FSharp.Extensions.XML")
