@@ -3,6 +3,9 @@
 
 This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs.
 
+### Installation
+To be Done
+
 ### Overriding Actor's Lifecycle
 if your are using extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you will notice that there are no means to override all of the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
 
@@ -31,4 +34,42 @@ type PlaybackActor() =
     override __.PostRestart e =
         // do something, like logging for example
         base.PostRestart(e)
+```
+
+With `Akka.Fsharp.API.Extensions` you can spawn `actor`'s with two new functions, taking overrides functions as parameters. The new functions are definied as follows:
+
+The `spawnOptOvrd` is based on the original `spawnOpt`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
+
+```fsharp
+ let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
+        (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef =
+        // body of the function
+```
+
+The `spawnOvrd` is based on the original `spawn`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
+
+```fsharp
+let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
+        (overrides : LifecycleOverride) : IActorRef = 
+        // body of the function
+```
+
+Simple usage:
+
+Let's say we would lile to override the `PostRestart` method. We can supply the overriding function body as follows:
+
+```fsharp
+let postRestart = Some(fun (baseFn : exn -> unit) -> /* you can log here */ )
+    
+    use system = System.create "testSystem" (Configuration.load())
+    let actor = 
+        spawnOptOvrd system "actorSys" 
+        <| actorOf2 (fun mailbox (msg : string) ->
+                if msg = "restart" then
+                    failwith "System must be restarted"
+                else
+                    mailbox.Sender() <! msg)
+        <| [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (fun error ->
+                Directive.Restart)) ]
+        <| {defOvrd with PostRestart = postRestart}
 ```
