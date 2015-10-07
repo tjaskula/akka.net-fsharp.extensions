@@ -7,9 +7,9 @@ This package contains some extensions to the [Akka.Net](http://getakka.net/) F# 
 To be Done
 
 ### Overriding Actor's Lifecycle
-if your are using extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you will notice that there are no means to override all of the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
+if you use extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you have certainly noticed that there are no means to override all of the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
 
-One way of doing it is use types instead of `actor` computation expression. Here is an example:
+One way of doing it is usesing types instead of `actor` computation expression. Here is an example:
 
 ```fsharp
 type PlaybackActor() =    
@@ -41,16 +41,20 @@ With `Akka.Fsharp.API.Extensions` you can spawn `actor`'s with two new functions
 The `spawnOptOvrd` is based on the original `spawnOpt`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
 
 ```fsharp
- let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
-        (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef =
+ let spawnOptOvrd (actorFactory : IActorRefFactory) 
+ 				  (name : string) 
+ 				  (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
+        		  (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef =
         // body of the function
 ```
 
 The `spawnOvrd` is based on the original `spawn`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
 
 ```fsharp
-let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
-        (overrides : LifecycleOverride) : IActorRef = 
+let spawnOvrd (actorFactory : IActorRefFactory) 
+			  (name : string) 
+			  (f : Actor<'Message> -> Cont<'Message, 'Returned>)
+        	  (overrides : LifecycleOverride) : IActorRef = 
         // body of the function
 ```
 
