@@ -4,7 +4,7 @@
 This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs.
 
 ### Installation
-To be Done
+[![NuGet](https://img.shields.io/nuget/v/Nuget.Core.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
 
 ### Overriding Actor's Lifecycle
 if you use extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you have certainly noticed that there are no means to override all of the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
