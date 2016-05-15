@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FsApi.Extensions.fs" />
+    <None Include="app.config.transform" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
   </ItemGroup>
