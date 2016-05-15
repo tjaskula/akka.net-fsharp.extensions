@@ -19,13 +19,13 @@ let projectSummary = "Set of extensions to the Akka.NET F# API."
 let buildDir = "./ComposeIt.Akka.FSharp.Extensions/bin"
 let packagingRoot = "./packaging/"
 let packagingDir = packagingRoot @@ "AkkaFSharpExtensions"
-let toolPath = "./packages/NuGet.CommandLine.2.8.6/tools/NuGet.exe"
+let toolPath = "./packages/NuGet.CommandLine.3.4.3/tools/NuGet.exe"
 
 let buildMode = getBuildParamOrDefault "buildMode" "Release"
 
 MSBuildDefaults <- { 
     MSBuildDefaults with 
-        ToolsVersion = Some "12.0"
+        ToolsVersion = Some "14.0"
         Verbosity = Some MSBuildVerbosity.Minimal }
 
 Target "Clean" (fun _ ->
@@ -34,7 +34,7 @@ Target "Clean" (fun _ ->
 
 let setParams defaults = {
     defaults with
-        ToolsVersion = Some("12.0")
+        ToolsVersion = Some("14.0")
         Targets = ["Build"]
         Properties =
             [
@@ -65,7 +65,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = packagingRoot
             Summary = projectSummary
             WorkingDir = packagingDir
-            Version = "0.1.0.2"
+            Version = "0.1.0.3"
             Dependencies =
                 ["Akka", GetPackageVersion "./packages/" "Akka"
                  "Akka.FSharp", GetPackageVersion "./packages/" "Akka.FSharp"
