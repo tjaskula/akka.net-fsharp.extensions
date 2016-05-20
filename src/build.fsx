@@ -73,7 +73,9 @@ Target "CreatePackage" (fun _ ->
                  "FSPowerPack.Core.Community", GetPackageVersion "./packages/" "FSPowerPack.Core.Community"
                  "FSPowerPack.Linq.Community", GetPackageVersion "./packages/" "FSPowerPack.Linq.Community"
                  "Newtonsoft.Json", GetPackageVersion "./packages/" "Newtonsoft.Json"]
-            Files = [@"lib\**\*.*", Some "lib", None]
+            Files = [
+                     (@"lib\**\*.*", Some "lib", None)
+                     (@"..\..\Install.ps1", Some "tools", None)]
             AccessKey = getBuildParamOrDefault "nugetkey" ""
             Publish = hasBuildParam "nugetkey" }) 
             "Akka.FSharp.Extensions.nuspec"
