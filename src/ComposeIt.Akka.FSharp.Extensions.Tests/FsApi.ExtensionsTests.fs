@@ -38,8 +38,8 @@ let ``can override PostStop methods when starting actor with computation express
         <| {defOvrd with PostStop = postStop}
     actor <! PoisonPill.Instance
     system.Stop(actor)
-    system.Shutdown()
-    system.AwaitTermination()
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (!postStopCalled) |> equals (true)
 
 [<Fact>]
@@ -61,8 +61,8 @@ let ``can override PreRestart methods when starting actor with computation expre
         <| {defOvrd with PreRestart = preRestart}
     actor <! "restart"
     let response = actor <? "msg" |> Async.RunSynchronously
-    system.Shutdown()
-    system.AwaitTermination()
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (!preRestartCalled, response) |> equals (true, "msg")
 
 [<Fact>]
@@ -84,6 +84,6 @@ let ``can override PostRestart methods when starting actor with computation expr
         <| {defOvrd with PostRestart = postRestart}
     actor <! "restart"
     let response = actor <? "msg" |> Async.RunSynchronously
-    system.Shutdown()
-    system.AwaitTermination()
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (!postRestartCalled, response) |> equals (true, "msg")
