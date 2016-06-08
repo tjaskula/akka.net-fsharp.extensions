@@ -19,7 +19,6 @@ let projectSummary = "Set of extensions to the Akka.NET F# API."
 let buildDir = "./ComposeIt.Akka.FSharp.Extensions/bin"
 let packagingRoot = "./packaging/"
 let packagingDir = packagingRoot @@ "AkkaFSharpExtensions"
-let toolPath = "./packages/NuGet.CommandLine.3.4.3/tools/NuGet.exe"
 
 let buildMode = getBuildParamOrDefault "buildMode" "Release"
 
