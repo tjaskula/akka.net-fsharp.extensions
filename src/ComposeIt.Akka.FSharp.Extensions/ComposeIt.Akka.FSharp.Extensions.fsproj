@@ -62,7 +62,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Akka.FSharp">
-      <HintPath>..\packages\Akka.FSharp.1.0.8\lib\net45\Akka.FSharp.dll</HintPath>
+      <HintPath>..\packages\Akka.FSharp.1.1.3\lib\net45\Akka.FSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.PowerPack">
