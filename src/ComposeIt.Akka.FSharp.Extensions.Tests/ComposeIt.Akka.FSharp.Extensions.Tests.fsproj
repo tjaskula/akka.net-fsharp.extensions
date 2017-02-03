@@ -97,8 +97,15 @@
       <HintPath>..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
     <ProjectReference Include="..\ComposeIt.Akka.FSharp.Extensions\ComposeIt.Akka.FSharp.Extensions.fsproj">
@@ -106,20 +113,21 @@
       <Project>{3e441bde-5dd4-46c6-bae3-77cfad1b747a}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="xunit.abstractions">
-      <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <HintPath>..\packages\xunit.abstractions.2.0.1\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.assert">
-      <HintPath>..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
+      <HintPath>..\packages\xunit.assert.2.2.0\lib\netstandard1.1\xunit.assert.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.core">
-      <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <HintPath>..\packages\xunit.extensibility.core.2.2.0\lib\netstandard1.1\xunit.core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="xunit.execution.desktop">
-      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+    <Reference Include="xunit.execution.dotnet">
+      <HintPath>..\packages\xunit.extensibility.execution.2.2.0\lib\netstandard1.1\xunit.execution.dotnet.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
