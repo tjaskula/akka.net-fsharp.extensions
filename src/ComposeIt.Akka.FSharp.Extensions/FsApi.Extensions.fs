@@ -25,6 +25,16 @@ module Lifecycle =
         member __.BasePreRestart(exn, msg) = base.PreRestart (exn, msg)
         member __.BasePostRestart(exn) = base.PostRestart (exn)
 
+        member __.Next (current : Decorator<'Message>) (context : Actor<'Message>) (message : obj) : Decorator<'Message> = 
+            match message with
+            | :? 'Message as msg -> 
+                match current with
+                | :? Become<'Message> as become -> become.Next msg
+                | _ -> current
+            | other -> 
+                base.Unhandled other
+                current
+
         override x.PreStart() = 
             match overrides.PreStart with
             | None -> x.BasePreStart ()
@@ -41,6 +51,14 @@ module Lifecycle =
             match overrides.PostRestart with
             | None -> x.BasePostRestart (exn)
             | Some o -> o x.BasePostRestart
+
+    and [<Interface>]Decorator<'Message> = interface end
+    and ActorAction<'Message> =
+        | Empty
+        interface Decorator<'Message>
+    and [<Struct>]Become<'Message>(next: 'Message -> Decorator<'Message>) =
+        member x.Next = next
+        interface Decorator<'Message>
 
     type ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
@@ -72,3 +90,19 @@ module Lifecycle =
     let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
         (overrides : LifecycleOverride) : IActorRef = 
         spawnOptOvrd actorFactory name f [] overrides
+
+    /// <summary>
+    /// Returns an actor effect causing no changes in message handling pipeline.
+    /// </summary>
+    let inline empty (_: 'Any) : Decorator<'Message> = ActorAction.Empty :> Decorator<'Message>
+
+    /// <summary>
+    /// Returns an actor effect causing actor to switch its behavior.
+    /// </summary>
+    /// <param name="next">New receive function.</param>
+    let inline become (next) : Decorator<'Message> = Become(next) :> Decorator<'Message>
+
+    let (|Become|_|) (effect: Decorator<'Message>) =
+        if effect :? Become<'Message>
+        then Some ((effect :?> Become<'Message>).Next)
+        else None
