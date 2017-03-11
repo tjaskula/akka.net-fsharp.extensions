@@ -92,6 +92,18 @@ module Lifecycle =
         spawnOptOvrd actorFactory name f [] overrides
 
     /// <summary>
+    /// Wraps provided function with actor behavior. 
+    /// It will be invoked each time, an actor will receive a message. 
+    /// </summary>
+    let actorOf (fn : 'Message -> #Decorator<'Message>) (mailbox : Actor<'Message>) : Decorator<'Message> = 
+        let rec loop() = 
+            actor { 
+                let! msg = mailbox.Receive()
+                return fn msg 
+            }
+        loop()
+
+    /// <summary>
     /// Returns an actor effect causing no changes in message handling pipeline.
     /// </summary>
     let inline empty (_: 'Any) : Decorator<'Message> = ActorAction.Empty :> Decorator<'Message>
