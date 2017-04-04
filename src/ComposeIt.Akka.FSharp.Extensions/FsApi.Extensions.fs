@@ -249,4 +249,3 @@ module Lifecycle =
     let inline become (next) : Decorator<'Message> = Become(next) :> Decorator<'Message>
 
 
-
