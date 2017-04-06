@@ -247,4 +247,3 @@ module Lifecycle =
     /// </summary>
     /// <param name="next">New receive function.</param>
     let inline become (next) : Decorator<'Message> = Become(next) :> Decorator<'Message>
-
