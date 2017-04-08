@@ -28,11 +28,11 @@ module Lifecycle =
         member __.BasePreRestart(exn, msg) = base.PreRestart (exn, msg)
         member __.BasePostRestart(exn) = base.PostRestart (exn)
 
-        member __.Next (current : Decorator<'Message>) (context : Actor<'Message>) (message : obj) : Decorator<'Message> = 
+        member __.Next (current : ContWrapper<'Message, 'Returned>) (context : Actor<'Message>) (message : obj) : ContWrapper<'Message, 'Returned> = 
             match message with
             | :? 'Message as msg -> 
                 match current with
-                | :? Become<'Message> as become -> become.Next msg
+                | :? Become<'Message, 'Returned> as become -> become.Next msg
                 | _ -> current
             | other -> 
                 base.Unhandled other
@@ -55,25 +55,27 @@ module Lifecycle =
             | None -> x.BasePostRestart (exn)
             | Some o -> o x.BasePostRestart
 
-    and [<Interface>]Decorator<'Message> = interface end
-    and ActorAction<'Message> =
+    and [<Interface>]ContWrapper<'Message, 'Returned> =
+        abstract Continuation : Cont<'Message, 'Returned>
+    and ActorAction<'Message, 'Returned> =
         | Empty
-        interface Decorator<'Message>
-    and [<Struct>]Become<'Message>(next: 'Message -> Decorator<'Message>) =
+        interface ContWrapper<'Message, 'Returned> with
+            member __.Continuation m = Func()
+    and [<Struct>]Become<'Message, 'Returned>(next: 'Message -> ContWrapper<'Message, 'Returned>) =
         member x.Next = next
-        interface Decorator<'Message>
-    and [<Struct>]AsyncDecorator<'Message>(asyncDecorator: Async<Decorator<'Message>>) =
+        interface ContWrapper<'Message, 'Returned>
+    and [<Struct>]AsyncContWrapper<'Message, 'Returned>(asyncDecorator: Async<ContWrapper<'Message, 'Returned>>) =
         member __.Decorator = asyncDecorator
-        interface Decorator<'Message>
+        interface ContWrapper<'Message, 'Returned>
 
     type ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
         static member ToExpression<'Actor>(f : Quotations.Expr<(unit -> 'Actor)>) = toExpression<'Actor> (QuotationEvaluator.ToLinqExpression f)
 
     
-    let (|Become|_|) (effect: Decorator<'Message>) =
-        if effect :? Become<'Message>
-        then Some ((effect :?> Become<'Message>).Next)
+    let (|Become|_|) (effect: ContWrapper<'Message, 'Returned>) =
+        if effect :? Become<'Message, 'Returned>
+        then Some ((effect :?> Become<'Message, 'Returned>).Next)
         else None
 
     /// Gives access to the next message throu let! binding in actor computation expression.
@@ -83,33 +85,33 @@ module Lifecycle =
 
     /// The builder for actor computation expression.
     type ActorBuilder() =
-        member __.Bind(_ : IO<'In>, continuation : 'In -> Decorator<'In>) : Decorator<'Message> = upcast Become(fun message -> continuation message)
-        member this.Bind(behavior : Decorator<'In>, continuation : Decorator<'In> -> Decorator<'In>) : Decorator<'In> = 
+        member __.Bind(_ : IO<'In>, continuation : 'In -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = upcast Become(fun message -> continuation message)
+        member this.Bind(behavior : ContWrapper<'In, 'Out>, continuation : ContWrapper<'In, 'Out> -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             match behavior with
-            | :? Become<'In> as become -> Become<'In>(fun message -> this.Bind(become.Next message, continuation)) :> Decorator<'In>
+            | :? Become<'In, 'Out> as become -> Become<'In, 'Out>(fun message -> this.Bind(become.Next message, continuation)) :> ContWrapper<'In, 'Out>
             | returned -> continuation returned    
-        member __.Bind(asyncInput: Async<'In>, continuation: 'In -> Decorator<'Out>) : Decorator<'Out> =
-            upcast AsyncDecorator (async {
+        member __.Bind(asyncInput: Async<'In>, continuation: 'In -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> =
+            upcast AsyncContWrapper (async {
                 let! returned = asyncInput 
                 return continuation returned 
             })
-        member __.ReturnFrom (effect: Decorator<'Message>) = effect
-        member __.Return (value: Decorator<'Message>) : Decorator<'Message> = value
-        member __.Zero () : Decorator<'Message> = Empty :> Decorator<'Message>
+        member __.ReturnFrom (effect: ContWrapper<'In, 'Out>) = effect
+        member __.Return (value: ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = value
+        member __.Zero () : ContWrapper<'In, 'Out> = Empty :> ContWrapper<'In, 'Out>
         member __.Yield value = value
 
-        member this.TryWith(tryExpr : unit -> Decorator<'In>, catchExpr : exn -> Decorator<'In>) : Decorator<'In> = 
+        member this.TryWith(tryExpr : unit -> ContWrapper<'In, 'Out>, catchExpr : exn -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             try 
                 true, tryExpr ()
             with error -> false, catchExpr error
             |> function 
-            | true, Become(next) -> Become<'In>(fun message -> this.TryWith((fun () -> next message), catchExpr)) :> Decorator<'In>
+            | true, Become(next) -> Become<'In, 'Out>(fun message -> this.TryWith((fun () -> next message), catchExpr)) :> ContWrapper<'In, 'Out>
             | _, value -> value    
 
-        member this.TryFinally(tryExpr : unit -> Decorator<'In>, finallyExpr : unit -> unit) : Decorator<'In> = 
+        member this.TryFinally(tryExpr : unit -> ContWrapper<'In, 'Out>, finallyExpr : unit -> unit) : ContWrapper<'In, 'Out> = 
             try 
                 match tryExpr() with
-                | Become next -> Become(fun message -> this.TryFinally((fun () -> next message), finallyExpr)) :> Decorator<'In>
+                | Become next -> Become(fun message -> this.TryFinally((fun () -> next message), finallyExpr)) :> ContWrapper<'In, 'Out>
                 | behavior -> 
                     finallyExpr()
                     behavior
@@ -117,20 +119,20 @@ module Lifecycle =
                 finallyExpr()
                 reraise()
     
-        member this.Using(disposable : #IDisposable, continuation : _ -> Decorator<'In>) : Decorator<'In> = 
+        member this.Using(disposable : #IDisposable, continuation : _ -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             this.TryFinally((fun () -> continuation disposable), fun () -> if disposable <> null then disposable.Dispose())
     
-        member this.While(condition : unit -> bool, continuation : unit -> Decorator<'In>) : Decorator<'In> = 
+        member this.While(condition : unit -> bool, continuation : unit -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             if condition() then 
                 match continuation() with
                 | Become next -> 
                     Become (fun message -> 
                         next message |> ignore
-                        this.While(condition, continuation)) :> Decorator<'In>
+                        this.While(condition, continuation)) :> ContWrapper<'In, 'Out>
                 | _ -> this.While(condition, continuation)
-            else Empty :> Decorator<'In>
+            else Empty :> ContWrapper<'In, 'Out>
     
-        member __.For(iterable : 'Iter seq, continuation : 'Iter -> Decorator<'In>) : Decorator<'In> = 
+        member __.For(iterable : 'Iter seq, continuation : 'Iter -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             use e = iterable.GetEnumerator()
         
             let rec loop() = 
@@ -139,33 +141,33 @@ module Lifecycle =
                     | Become fn -> 
                         Become(fun m -> 
                             fn m |> ignore
-                            loop()) :> Decorator<'In>
+                            loop()) :> ContWrapper<'In, 'Out>
                     | _ -> loop()
-                else Empty :> Decorator<'In>
+                else Empty :> ContWrapper<'In, 'Out>
             loop()
     
-        member __.Delay(continuation : unit -> Decorator<'In>) = continuation
-        member __.Run(continuation : unit -> Decorator<'In>) = continuation ()
-        member __.Run(continuation : Decorator<'In>) = continuation
+        member __.Delay(continuation : unit -> ContWrapper<'In, 'Out>) = continuation
+        member __.Run(continuation : unit -> ContWrapper<'In, 'Out>) = continuation ()
+        member __.Run(continuation : ContWrapper<'In, 'Out>) = continuation
     
-        member this.Combine(first : unit -> Decorator<'In>, second : unit -> Decorator<'In>) : Decorator<'In> = 
+        member this.Combine(first : unit -> ContWrapper<'In, 'Out>, second : unit -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             match first () with
-            | Become next -> Become(fun message -> this.Combine((fun () -> next message), second)) :> Decorator<'In>
+            | Become next -> Become(fun message -> this.Combine((fun () -> next message), second)) :> ContWrapper<'In, 'Out>
             | _ -> second ()
     
-        member this.Combine(first : Decorator<'In>, second : unit -> Decorator<'In>) : Decorator<'In> = 
+        member this.Combine(first : ContWrapper<'In, 'Out>, second : unit -> ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             match first with
-            | Become next -> Become(fun message -> this.Combine(next message, second)) :> Decorator<'In>
+            | Become next -> Become(fun message -> this.Combine(next message, second)) :> ContWrapper<'In, 'Out>
             | _ -> second ()
     
-        member this.Combine(first : unit -> Decorator<'In>, second : Decorator<'In>) : Decorator<'In> = 
+        member this.Combine(first : unit -> ContWrapper<'In, 'Out>, second : ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             match first () with
-            | Become next -> Become(fun message -> this.Combine((fun () -> next message), second)) :> Decorator<'In>
+            | Become next -> Become(fun message -> this.Combine((fun () -> next message), second)) :> ContWrapper<'In, 'Out>
             | _ -> second
     
-        member this.Combine(first : Decorator<'In>, second : Decorator<'In>) : Decorator<'In> = 
+        member this.Combine(first : ContWrapper<'In, 'Out>, second : ContWrapper<'In, 'Out>) : ContWrapper<'In, 'Out> = 
             match first with
-            | Become next -> Become(fun message -> this.Combine(next message, second)) :> Decorator<'In>
+            | Become next -> Become(fun message -> this.Combine(next message, second)) :> ContWrapper<'In, 'Out>
             | _ -> second
         
     /// Builds an actor message handler using an actor expression syntax.
@@ -180,24 +182,12 @@ module Lifecycle =
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="options">List of options used to configure actor creation</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
+    let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>) 
         (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef = 
-        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f, overrides))
-        let props = applySpawnOptions (Props.Create e) options
-        actorFactory.ActorOf(props, name)
-
-    /// <summary>
-    /// Spawns an actor using specified actor computation expression, with custom spawn option settings.
-    /// The actor can only be used locally. 
-    /// </summary>
-    /// <param name="actorFactory">Either actor system or parent actor</param>
-    /// <param name="name">Name of spawned child actor</param>
-    /// <param name="f">Used by actor for handling response for incoming request</param>
-    /// <param name="options">List of options used to configure actor creation</param>
-    /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOptOvrd2 (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Decorator<'Message>) 
-        (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef = 
-        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f, overrides))
+        let toContFromWrapper (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>) : Actor<'Message> -> Cont<'Message, 'Returned> =
+            let continuation a = f(a).Continuation
+            continuation
+        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(toContFromWrapper f, overrides))
         let props = applySpawnOptions (Props.Create e) options
         actorFactory.ActorOf(props, name)
 
@@ -209,27 +199,15 @@ module Lifecycle =
     /// <param name="name">Name of spawned child actor</param>
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
+    let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>)
         (overrides : LifecycleOverride) : IActorRef = 
         spawnOptOvrd actorFactory name f [] overrides
-
-    /// <summary>
-    /// Spawns an actor using specified actor computation expression.
-    /// The actor can only be used locally. 
-    /// </summary>
-    /// <param name="actorFactory">Either actor system or parent actor</param>
-    /// <param name="name">Name of spawned child actor</param>
-    /// <param name="f">Used by actor for handling response for incoming request</param>
-    /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOvrd2 (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Decorator<'Message>)
-        (overrides : LifecycleOverride) : IActorRef = 
-        spawnOptOvrd2 actorFactory name f [] overrides
 
     /// <summary>
     /// Wraps provided function with actor behavior. 
     /// It will be invoked each time, an actor will receive a message. 
     /// </summary>
-    let actorOf (fn : 'Message -> #Decorator<'Message>) (mailbox : Actor<'Message>) : Decorator<'Message> = 
+    let actorOf (fn : 'Message -> #ContWrapper<'Message, 'Returned>) (mailbox : Actor<'Message>) : ContWrapper<'Message, 'Returned> = 
         let rec loop() = 
             actor { 
                 let! msg = mailbox.Receive()
@@ -240,10 +218,10 @@ module Lifecycle =
     /// <summary>
     /// Returns an actor effect causing no changes in message handling pipeline.
     /// </summary>
-    let inline empty (_: 'Any) : Decorator<'Message> = ActorAction.Empty :> Decorator<'Message>
+    let inline empty (_: 'Any) : ContWrapper<'Message, 'Returned> = ActorAction.Empty :> ContWrapper<'Message, 'Returned>
 
     /// <summary>
     /// Returns an actor effect causing actor to switch its behavior.
     /// </summary>
     /// <param name="next">New receive function.</param>
-    let inline become (next) : Decorator<'Message> = Become(next) :> Decorator<'Message>
+    let inline become (next) : ContWrapper<'Message, 'Returned> = Become(next) :> ContWrapper<'Message, 'Returned>
