@@ -56,26 +56,28 @@ module Lifecycle =
             | Some o -> o x.BasePostRestart
 
     and [<Interface>]ContWrapper<'Message, 'Returned> =
-        abstract Continuation : Cont<'Message, 'Returned>
+        abstract Continuation : 'Message -> Cont<'Message, 'Returned>
     and ActorAction<'Message, 'Returned> =
         | Empty
         interface ContWrapper<'Message, 'Returned> with
-            member __.Continuation m = Func()
+            member __.Continuation = let d = fun (m :'Returned) -> Return(m)
     and [<Struct>]Become<'Message, 'Returned>(next: 'Message -> ContWrapper<'Message, 'Returned>) =
         member x.Next = next
         interface ContWrapper<'Message, 'Returned>
+            member __.Continuation f = Func(fun m -> f m)
     and [<Struct>]AsyncContWrapper<'Message, 'Returned>(asyncDecorator: Async<ContWrapper<'Message, 'Returned>>) =
         member __.Decorator = asyncDecorator
         interface ContWrapper<'Message, 'Returned>
+            member __.Continuation f = Func(fun m -> f m)
 
     type ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
         static member ToExpression<'Actor>(f : Quotations.Expr<(unit -> 'Actor)>) = toExpression<'Actor> (QuotationEvaluator.ToLinqExpression f)
 
     
-    let (|Become|_|) (effect: ContWrapper<'Message, 'Returned>) =
-        if effect :? Become<'Message, 'Returned>
-        then Some ((effect :?> Become<'Message, 'Returned>).Next)
+    let (|Become|_|) (continuation: ContWrapper<'Message, 'Returned>) =
+        if continuation :? Become<'Message, 'Returned>
+        then Some ((continuation :?> Become<'Message, 'Returned>).Next)
         else None
 
     /// Gives access to the next message throu let! binding in actor computation expression.
@@ -184,10 +186,10 @@ module Lifecycle =
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
     let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>) 
         (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef = 
-        let toContFromWrapper (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>) : Actor<'Message> -> Cont<'Message, 'Returned> =
-            let continuation a = f(a).Continuation
+        let unwrapCont (f : Actor<'Message> -> ContWrapper<'Message, 'Returned>) : Actor<'Message> -> Cont<'Message, 'Returned> =
+            let continuation a = f(a).Continuation(fun m -> )
             continuation
-        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(toContFromWrapper f, overrides))
+        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(unwrapCont f, overrides))
         let props = applySpawnOptions (Props.Create e) options
         actorFactory.ActorOf(props, name)
 
