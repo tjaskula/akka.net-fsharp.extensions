@@ -10,7 +10,7 @@
     <RootNamespace>ComposeIt.Akka.FSharp.Extensions.Tests</RootNamespace>
     <AssemblyName>ComposeIt.Akka.FSharp.Extensions.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Name>ComposeIt.Akka.FSharp.Extensions.Tests</Name>
     <TargetFrameworkProfile />
