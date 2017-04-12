@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.Extensions", "ComposeIt.Akka.FSharp.Extensions\ComposeIt.Akka.FSharp.Extensions.fsproj", "{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}"
 EndProject
@@ -13,6 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E432BE18
 		build.bat = build.bat
 		build.fsx = build.fsx
 		Install.ps1 = Install.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{98606AC9-8C1F-4FBF-ACF5-24420F9308CE}"
+	ProjectSection(SolutionItems) = preProject
+		Statefull.fsx = Statefull.fsx
 	EndProjectSection
 EndProject
 Global
