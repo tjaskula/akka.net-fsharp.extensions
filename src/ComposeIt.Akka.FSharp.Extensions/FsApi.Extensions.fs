@@ -2,13 +2,10 @@
 
 module Lifecycle =
     
-    open System
     open Akka.Actor
     open Akka.FSharp
     open Akka.FSharp.Linq
     open Microsoft.FSharp.Linq
-    open Microsoft.FSharp.Quotations
-    open Microsoft.FSharp.Linq.QuotationEvaluation
 
     type LifecycleOverride =
         {
@@ -27,8 +24,6 @@ module Lifecycle =
         member __.BasePostStop() = base.PostStop ()
         member __.BasePreRestart(exn, msg) = base.PreRestart (exn, msg)
         member __.BasePostRestart(exn) = base.PostRestart (exn)
-
-        
 
         override x.PreStart() = 
             match overrides.PreStart with
@@ -50,7 +45,6 @@ module Lifecycle =
     type ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
         static member ToExpression<'Actor>(f : Quotations.Expr<(unit -> 'Actor)>) = toExpression<'Actor> (QuotationEvaluator.ToLinqExpression f)
-
 
     /// <summary>
     /// Spawns an actor using specified actor computation expression, with custom spawn option settings.
@@ -78,11 +72,6 @@ module Lifecycle =
     let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
         (overrides : LifecycleOverride) : IActorRef = 
         spawnOptOvrd actorFactory name f [] overrides
-
-//    let (|Become|_|) (continuation: Cont<'Message, 'Returned>) =
-//        match continuation with
-//        | Func f -> 
-//        | 
 
     /// <summary>
     /// Wraps provided function with actor behavior. 
