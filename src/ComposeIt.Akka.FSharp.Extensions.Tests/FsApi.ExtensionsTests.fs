@@ -89,25 +89,30 @@ let ``can override PostRestart methods when starting actor with computation expr
     (!postRestartCalled, response) |> equals (true, "msg")
 
 type Message =
-    | Hi
-    | Greet of string
+    | Print
+    | MyName of string
 
 [<Fact>]
 let ``can change behaviour with become`` () =
     
     let preStartCalled = ref false
+    let answer = ref "no one"
     let preStart = Some(fun (baseFn : unit -> unit) -> preStartCalled := true)
 
-    let rec greeter lastKnown = function
-        | Hi -> printfn "Who sent Hi? %s?" lastKnown |> empty
-        | Greet(who) ->
-            printfn "%s sends greetings" |> ignore
-            become (greeter who)
+    let rec namePrinter lastName = function
+        | Print -> answer := sprintf "Last name was %s?" lastName
+                   answer |> empty
+        | MyName(who) ->
+            become (namePrinter who)
 
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
         spawnOvrd system "actor" 
-        <| actorOf (greeter "Me")
+        <| actorOf (namePrinter "No one")
         <| {defOvrd with PreStart = preStart}
-    let response = actor <? "msg" |> Async.RunSynchronously
-    (!preStartCalled, response) |> equals (true, "msg")
+    actor <! MyName "Tomasz"
+    actor <! MyName "Marcel"
+    actor <! Print
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
+    (!preStartCalled, answer) |> equals (true, ref "Last name was Marcel?")
