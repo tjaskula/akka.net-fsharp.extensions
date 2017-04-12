@@ -1,9 +1,9 @@
 ﻿// sets the current directory to be same as the script directory
 System.IO.Directory.SetCurrentDirectory (__SOURCE_DIRECTORY__)
 
-#r @"./ComposeIt.Akka.FSharp.Extensions/bin/Debug/Akka.dll"
-#r @"./ComposeIt.Akka.FSharp.Extensions/bin/Debug/Akka.FSharp.dll"
-#r @"./ComposeIt.Akka.FSharp.Extensions/bin/Debug/ComposeIt.Akka.FSharp.Extensions.dll"
+#r @"../ComposeIt.Akka.FSharp.Extensions/bin/Debug/Akka.dll"
+#r @"../ComposeIt.Akka.FSharp.Extensions/bin/Debug/Akka.FSharp.dll"
+#r @"../ComposeIt.Akka.FSharp.Extensions/bin/Debug/ComposeIt.Akka.FSharp.Extensions.dll"
 
 open Akka.FSharp
 open ComposeIt.Akka.FSharp.Extensions.Lifecycle
