@@ -4,6 +4,7 @@ open Akka.FSharp
 open Akka.Actor
 open ComposeIt.Akka.FSharp.Extensions.Lifecycle
 open System
+open System.Threading.Tasks
 open Xunit
 
 let equals (expected: 'a) (value: 'a) = Assert.Equal<'a>(expected, value) 
@@ -95,9 +96,7 @@ type Message =
 [<Fact>]
 let ``can change behaviour with become`` () =
     
-    let preStartCalled = ref false
     let answer = ref "no one"
-    let preStart = Some(fun (baseFn : unit -> unit) -> preStartCalled := true)
 
     let rec namePrinter lastName = function
         | Print -> answer := sprintf "Last name was %s?" lastName
@@ -107,12 +106,12 @@ let ``can change behaviour with become`` () =
 
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
-        spawnOvrd system "actor" 
+        spawn system "actor" 
         <| actorOf (namePrinter "No one")
-        <| {defOvrd with PreStart = preStart}
     actor <! MyName "Tomasz"
     actor <! MyName "Marcel"
     actor <! Print
+    Task.Delay(100).Wait()
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
-    (!preStartCalled, answer) |> equals (true, ref "Last name was Marcel?")
+    (answer.Value) |> equals ("Last name was Marcel?")
