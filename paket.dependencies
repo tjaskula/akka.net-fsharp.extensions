@@ -2,10 +2,7 @@ source https://www.nuget.org/api/v2
 
 nuget Akka.FSharp 1.2.0 framework: >= net45
 nuget FAKE
-nuget NETStandard.Library 1.6.0 framework: >= net45
 nuget NuGet.CommandLine 3.5.0 framework: >= net45
-nuget System.Diagnostics.Tools 4.0.1 framework: >= net45
-nuget System.Linq 4.1.0
 nuget System.Linq.Expressions 4.1.0 framework: >= net45
 nuget System.Net.Primitives 4.0.11 framework: >= net45
 nuget System.ObjectModel 4.0.12 framework: >= net45

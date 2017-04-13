@@ -1,7 +1,4 @@
 Akka.FSharp
-NETStandard.Library
-System.Diagnostics.Tools
-System.Linq
 System.Linq.Expressions
 System.Net.Primitives
 System.ObjectModel
