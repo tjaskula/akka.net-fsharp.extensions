@@ -3,15 +3,4 @@ source https://www.nuget.org/api/v2
 nuget Akka.FSharp 1.2.0 framework: >= net45
 nuget FAKE
 nuget NuGet.CommandLine 3.5.0 framework: >= net45
-nuget System.Linq.Expressions 4.1.0 framework: >= net45
-nuget System.Net.Primitives 4.0.11 framework: >= net45
-nuget System.ObjectModel 4.0.12 framework: >= net45
-nuget System.Reflection.Extensions 4.0.1 framework: >= net45
-nuget System.Reflection.Primitives 4.0.1 framework: >= net45
-nuget System.Text.Encoding 4.0.11 framework: >= net45
-nuget System.Text.Encoding.Extensions 4.0.11 framework: >= net45
-nuget System.Text.RegularExpressions 4.1.0 framework: >= net45
-nuget System.Threading 4.0.11
-nuget System.Xml.ReaderWriter 4.0.11 framework: >= net45
-nuget System.Xml.XDocument 4.0.11 framework: >= net45
 nuget xunit 2.2.0 framework: >= net45

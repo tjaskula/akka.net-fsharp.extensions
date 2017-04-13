@@ -1,13 +1,2 @@
 Akka.FSharp
-System.Linq.Expressions
-System.Net.Primitives
-System.ObjectModel
-System.Reflection.Extensions
-System.Reflection.Primitives
-System.Text.Encoding
-System.Text.Encoding.Extensions
-System.Text.RegularExpressions
-System.Threading
-System.Xml.ReaderWriter
-System.Xml.XDocument
 xunit
