@@ -1,7 +1,7 @@
 ﻿// sets the current directory to be same as the script directory
 System.IO.Directory.SetCurrentDirectory (__SOURCE_DIRECTORY__)
 
-#r @"../packages/FAKE/tools/FakeLib.dll"
+#r @"./packages/FAKE/tools/FakeLib.dll"
 #r "System.Configuration.dll"
 
 open Fake
@@ -16,7 +16,7 @@ let projectDescription = "Set of extensions to the Akka.NET F# API. Some feature
 let projectSummary = "Set of extensions to the Akka.NET F# API."
 
 // directories
-let buildDir = "./ComposeIt.Akka.FSharp.Extensions/bin"
+let buildDir = "./src/ComposeIt.Akka.FSharp.Extensions/bin"
 let packagingRoot = "./packaging/"
 let packagingDir = packagingRoot @@ "AkkaFSharpExtensions"
 
@@ -42,7 +42,7 @@ let setParams defaults = {
     }
 
 Target "BuildApp" (fun _ ->
-    build setParams "./FSharp.Extensions.sln"
+    build setParams "./src/FSharp.Extensions.sln"
         |> DoNothing
 )
 
@@ -64,7 +64,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = packagingRoot
             Summary = projectSummary
             WorkingDir = packagingDir
-            Version = "0.1.0.3"
+            Version = "0.1.1.0"
             Dependencies =
                 ["Akka", GetPackageVersion "./packages/" "Akka"
                  "Akka.FSharp", GetPackageVersion "./packages/" "Akka.FSharp"
