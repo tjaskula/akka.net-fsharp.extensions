@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{04468435-790D-4E92-AF45-54412BC67BA7}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
+		..\paket.lock = ..\paket.lock
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.Extensions", "ComposeIt.Akka.FSharp.Extensions\ComposeIt.Akka.FSharp.Extensions.fsproj", "{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}"
