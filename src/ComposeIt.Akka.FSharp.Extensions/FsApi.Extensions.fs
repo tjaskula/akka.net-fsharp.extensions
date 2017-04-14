@@ -1,6 +1,6 @@
 ﻿namespace ComposeIt.Akka.FSharp.Extensions
 
-module Lifecycle =
+module Actor =
     
     open Akka.Actor
     open Akka.FSharp
