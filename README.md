@@ -1,7 +1,7 @@
 # Akka.FSharp.API.Extensions
 ## Set of extensions to the Akka.NET F# API
 
-This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs. [![NuGet](https://img.shields.io/badge/nuget-v0.1.1.0-blue.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
+This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs. [![NuGet](https://img.shields.io/badge/nuget-v0.1.1.1-blue.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
 
 ### Installation
 
@@ -111,4 +111,4 @@ You can create simply stateful actors with `become` function. An example is more
 
 # Maintainer
 
-*[@tjaskula](https://twitter.com/tjaskula)
+-[@tjaskula](https://twitter.com/tjaskula)
