@@ -1,4 +1,4 @@
-# Akka.Fsharp.API.Extensions
+# Akka.FSharp.API.Extensions
 ## Set of extensions to the Akka.NET F# API
 
 This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs. [![NuGet](https://img.shields.io/badge/nuget-v0.1.1.0-blue.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
@@ -63,7 +63,7 @@ let spawnOvrd (actorFactory : IActorRefFactory)
         // body of the function
 ```
 
-Simple usage:
+### Simple usage:
 
 Let's say we would lile to override the `PostRestart` method. We can supply the overriding function body as follows:
 
@@ -82,3 +82,33 @@ let postRestart = Some(fun (baseFn : exn -> unit) -> /* you can log here */ )
                 Directive.Restart)) ]
         <| {defOvrd with PostRestart = postRestart}
 ```
+
+### Stateful Actors
+
+You can create simply stateful actors with `become` function. An example is more worth than words:
+
+```fsharp
+	type Message =
+		| Print
+		| MyName of string
+
+	let rec namePrinter lastName = function
+		| Print -> printfn "Last name was %s?" lastName |> empty
+		| MyName(who) ->
+			printfn "Hello %s!" who
+			become (namePrinter who)
+
+	let system = System.create "testSystem" (Configuration.load())
+
+	let actor = 
+		spawn system "actor" 
+		<| actorOf (namePrinter "No One")
+
+	actor <! MyName "Tomasz"
+	actor <! MyName "Marcel"
+	actor <! Print
+```
+
+# Maintainer
+
+*[@tjaskula](https://twitter.com/tjaskula)
