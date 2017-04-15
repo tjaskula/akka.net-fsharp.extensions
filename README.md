@@ -111,4 +111,4 @@ You can create simply stateful actors with `become` function. An example is more
 
 # Maintainer
 
--[@tjaskula](https://twitter.com/tjaskula)
+- [@tjaskula](https://twitter.com/tjaskula)
