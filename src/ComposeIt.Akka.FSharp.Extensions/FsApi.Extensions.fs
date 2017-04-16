@@ -49,7 +49,6 @@ module Actor =
     /// <param name="name">Name of spawned child actor</param>
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="options">List of options used to configure actor creation</param>
-    /// <param name="overrides">Functions used to override standard actor lifetime</param>
     let spawnOpt (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
         (options : SpawnOption list) : IActorRef = 
         let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f))
@@ -63,7 +62,6 @@ module Actor =
     /// <param name="actorFactory">Either actor system or parent actor</param>
     /// <param name="name">Name of spawned child actor</param>
     /// <param name="f">Used by actor for handling response for incoming request</param>
-    /// <param name="overrides">Functions used to override standard actor lifetime</param>
     let spawn (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) : IActorRef = 
         spawnOpt actorFactory name f []
 
@@ -79,6 +77,11 @@ module Actor =
                 return! fn msg 
             }
         loop()
+
+    let (|LifecycleEvent|_|) (msg: obj) =
+        if msg :? LifecycleMessage
+        then Some (msg :?> LifecycleMessage)
+        else None
 
     /// <summary>
     /// Returns an actor effect causing no changes in message handling pipeline.

@@ -22,7 +22,7 @@ let ``can override PreStart method when starting actor with computation expressi
             let rec loop() = actor {
                 let! (msg : obj) = parentMailbox.Receive()
                 match msg with
-                | :? LifecycleMessage  as e -> 
+                | LifecycleEvent e -> 
                     match e with
                     | PreStart -> preStartCalled := true
                     | _ -> ()
