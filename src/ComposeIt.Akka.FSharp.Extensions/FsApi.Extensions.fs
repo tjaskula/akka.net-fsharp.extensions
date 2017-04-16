@@ -7,40 +7,35 @@ module Actor =
     open Akka.FSharp.Linq
     open Microsoft.FSharp.Linq
 
-    type Lifecycle =
-        {
-            PreStart    : ((unit -> unit) -> unit) option;
-            PostStop    : ((unit -> unit) -> unit) option;
-            PreRestart  : ((exn * obj -> unit) -> unit) option;
-            PostRestart : ((exn -> unit) -> unit) option;
-        }
-
-    let defOvrd = {PreStart = None; PostStop = None; PreRestart = None; PostRestart = None}
+    type LifecycleMessage = 
+        | PreStart
+        | PostStop
+        | PreRestart of cause : exn * message : obj
+        | PostRestart of cause : exn
     
-    type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>, overrides : Lifecycle) =
+    type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>) as this =
         inherit FunActor<'Message, 'Returned>(actor)
         
-        member __.BasePreStart() = base.PreStart ()
-        member __.BasePostStop() = base.PostStop ()
-        member __.BasePreRestart(exn, msg) = base.PreRestart (exn, msg)
-        member __.BasePostRestart(exn) = base.PostRestart (exn)
+        member __.Handle (msg: obj) = 
+            base.OnReceive(msg)
 
-        override x.PreStart() = 
-            match overrides.PreStart with
-            | None -> x.BasePreStart ()
-            | Some o -> o x.BasePreStart
-        override x.PostStop() =
-            match overrides.PostStop with
-            | None -> x.BasePostStop ()
-            | Some o -> o x.BasePostStop
-        override x.PreRestart(exn, msg) =
-            match overrides.PreRestart with
-            | None -> x.BasePreRestart (exn, msg)
-            | Some o -> o x.BasePreRestart
-        override x.PostRestart(exn) =
-            match overrides.PostRestart with
-            | None -> x.BasePostRestart (exn)
-            | Some o -> o x.BasePostRestart
+        override this.OnReceive msg = this.Handle msg
+
+        override this.PreStart() = 
+            base.PreStart ()
+            this.Handle PreStart
+
+        override this.PostStop() =
+            base.PostStop ()
+            this.Handle PostStop
+
+        override this.PreRestart(exn, msg) =
+            base.PreRestart (exn, msg)
+            this.Handle(PreRestart(exn, msg))
+
+        override this.PostRestart(exn) =
+            base.PostRestart (exn)
+            this.Handle(PostRestart exn)
 
     type ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
@@ -55,9 +50,9 @@ module Actor =
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="options">List of options used to configure actor creation</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOptOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
-        (options : SpawnOption list) (overrides : Lifecycle) : IActorRef = 
-        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f, overrides))
+    let spawnOpt (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
+        (options : SpawnOption list) : IActorRef = 
+        let e = ExpressionExt.ToExpression(fun () -> new FunActorExt<'Message, 'Returned>(f))
         let props = applySpawnOptions (Props.Create e) options
         actorFactory.ActorOf(props, name)
 
@@ -69,9 +64,9 @@ module Actor =
     /// <param name="name">Name of spawned child actor</param>
     /// <param name="f">Used by actor for handling response for incoming request</param>
     /// <param name="overrides">Functions used to override standard actor lifetime</param>
-    let spawnOvrd (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>)
-        (overrides : Lifecycle) : IActorRef = 
-        spawnOptOvrd actorFactory name f [] overrides
+    let spawn (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) : IActorRef = 
+        spawnOpt actorFactory name f []
+
 
     /// <summary>
     /// Wraps provided function with actor behavior. 
