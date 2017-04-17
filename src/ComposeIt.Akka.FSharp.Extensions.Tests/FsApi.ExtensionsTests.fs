@@ -110,19 +110,20 @@ let ``can override PostRestart methods when starting actor with computation expr
                 match msg with
                 | LifecycleEvent e -> 
                     match e with
-                    | PostRestart _ -> postRestartCalled := true
+                    | PreRestart(_, _) -> postRestartCalled := true
                     | _ -> ()
-                | _ -> ()
-                let sender = mailbox.Sender()
-                match sender with
-                | null -> ()
-                | _ -> sender <! "ok"
+                | :? string as m -> 
+                    if m = "restart"
+                    then failwith "System must be restarted"
+                    else mailbox.Sender() <! m
+                | _ -> mailbox.Sender() <! msg
                 return! loop ()
             }
             loop ()
-        <| [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (fun error -> Directive.Restart)) ]
-    actor <? PoisonPill.Instance |> Async.RunSynchronously
-    Thread.Sleep(500)
+        <| [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (fun error ->
+                Directive.Restart)) ]
+    actor <! "restart"
+    let response = actor <? "msg" |> Async.RunSynchronously
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     !postRestartCalled |> equals true
