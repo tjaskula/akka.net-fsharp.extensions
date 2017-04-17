@@ -23,15 +23,11 @@ module Actor =
 
         let mutable postStopWasHandled = false
         
-        member __.Handle (msg: obj) = 
-            base.OnReceive(msg)
+        member __.Handle (msg: obj) = base.OnReceive(msg)
 
-        override this.OnReceive msg = 
-            //printfn "OnReceive %A" msg
-            this.Handle msg
+        override this.OnReceive msg = this.Handle msg
 
         override this.PreStart() = 
-            //printfn "PreStart"
             base.PreStart ()
             this.Handle PreStart
 
@@ -42,12 +38,10 @@ module Actor =
                 this.Handle PostStop
 
         override this.PreRestart(exn, msg) =
-            //printfn "PreRestart"
             base.PreRestart (exn, msg)
             this.Handle(PreRestart(exn, msg))
 
         override this.PostRestart(exn) =
-            //printfn "PostRestart"
             base.PostRestart (exn)
             this.Handle(PostRestart exn)
 
@@ -93,12 +87,12 @@ module Actor =
         loop()
 
     /// <summary>
-    /// Returns an actor effect causing no changes in message handling pipeline.
+    /// Returns a continuation stopping the message handling pipeline.
     /// </summary>
-    let inline empty (out: 'Any) : Cont<'Message, 'Returned> = Return(out)
+    let inline empty (_: 'Any) : Cont<'Message, 'Returned> = Func(fun m -> Return ())
 
     /// <summary>
-    /// Returns an actor effect causing actor to switch its behavior.
+    /// Returns a continuation causing actor to switch its behavior.
     /// </summary>
     /// <param name="next">New receive function.</param>
     let inline become (next) : Cont<'Message, 'Returned> = Func(next)
