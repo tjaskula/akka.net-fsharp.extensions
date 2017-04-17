@@ -139,7 +139,7 @@ let ``can change behaviour with become`` () =
 
     let rec namePrinter lastName = function
         | Print -> answer := sprintf "Last name was %s?" lastName 
-                   answer |> empty
+                   empty
         | MyName(who) ->
             become (namePrinter who)
 
@@ -150,7 +150,6 @@ let ``can change behaviour with become`` () =
     actor <! MyName "Tomasz"
     actor <! MyName "Marcel"
     actor <! Print
-    actor <! MyName "Marcel"
     Task.Delay(100).Wait()
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore

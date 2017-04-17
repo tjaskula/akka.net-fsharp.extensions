@@ -89,7 +89,7 @@ module Actor =
     /// <summary>
     /// Returns a continuation stopping the message handling pipeline.
     /// </summary>
-    let inline empty (_: 'Any) : Cont<'Message, 'Returned> = Func(fun m -> Return ())
+    let empty : Cont<'Message, 'Returned> = Return ()
 
     /// <summary>
     /// Returns a continuation causing actor to switch its behavior.
