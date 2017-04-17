@@ -110,7 +110,7 @@ let ``can override PostRestart methods when starting actor with computation expr
                 match msg with
                 | LifecycleEvent e -> 
                     match e with
-                    | PreRestart(_, _) -> postRestartCalled := true
+                    | PostRestart exn -> postRestartCalled := true
                     | _ -> ()
                 | :? string as m -> 
                     if m = "restart"

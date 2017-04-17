@@ -3,7 +3,7 @@
 #r @"../ComposeIt.Akka.FSharp.Extensions/bin/Debug/ComposeIt.Akka.FSharp.Extensions.dll"
 
 open Akka.FSharp
-open ComposeIt.Akka.FSharp.Extensions.Lifecycle
+open ComposeIt.Akka.FSharp.Extensions.Actor
 
 let system = System.create "testSystem" (Configuration.load())
 

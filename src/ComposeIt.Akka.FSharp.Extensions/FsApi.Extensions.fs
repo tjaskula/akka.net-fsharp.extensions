@@ -12,28 +12,42 @@ module Actor =
         | PostStop
         | PreRestart of cause : exn * message : obj
         | PostRestart of cause : exn
+
+    let (|LifecycleEvent|_|) (msg: obj) =
+        if msg :? LifecycleMessage
+        then Some (msg :?> LifecycleMessage)
+        else None
     
     type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>) as this =
         inherit FunActor<'Message, 'Returned>(actor)
+
+        let mutable postStopWasHandled = false
         
         member __.Handle (msg: obj) = 
             base.OnReceive(msg)
 
-        override this.OnReceive msg = this.Handle msg
+        override this.OnReceive msg = 
+            //printfn "OnReceive %A" msg
+            this.Handle msg
 
         override this.PreStart() = 
+            //printfn "PreStart"
             base.PreStart ()
             this.Handle PreStart
 
         override this.PostStop() =
-            base.PostStop ()
-            this.Handle PostStop
+            if not postStopWasHandled then
+                postStopWasHandled <- true
+                base.PostStop ()
+                this.Handle PostStop
 
         override this.PreRestart(exn, msg) =
+            //printfn "PreRestart"
             base.PreRestart (exn, msg)
             this.Handle(PreRestart(exn, msg))
 
         override this.PostRestart(exn) =
+            //printfn "PostRestart"
             base.PostRestart (exn)
             this.Handle(PostRestart exn)
 
@@ -70,18 +84,13 @@ module Actor =
     /// Wraps provided function with actor behavior. 
     /// It will be invoked each time, an actor will receive a message. 
     /// </summary>
-    let actorOf (fn : 'Message -> #Cont<'Message, 'Returned>) (mailbox : Actor<'Message>) : Cont<'Message, 'Returned> = 
+    let actorOf (fn : 'Message -> Cont<'Message, 'Returned>) (mailbox : Actor<'Message>) : Cont<'Message, 'Returned> = 
         let rec loop() = 
             actor { 
                 let! msg = mailbox.Receive()
                 return! fn msg 
             }
         loop()
-
-    let (|LifecycleEvent|_|) (msg: obj) =
-        if msg :? LifecycleMessage
-        then Some (msg :?> LifecycleMessage)
-        else None
 
     /// <summary>
     /// Returns an actor effect causing no changes in message handling pipeline.
