@@ -11,7 +11,7 @@ Run the following command in the [Package Manager Console](http://docs.nuget.org
 PM> Install-Package Akka.NET.FSharp.API.Extensions
 ```
 
-### Overriding Actor's Lifecycle
+### Actor's Lifecycle
 if you use extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you have certainly noticed that there are no way to handle the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
 
 One way to achieve that is through types instead of `actor` computation expression. Here is an example:
@@ -42,9 +42,9 @@ type PlaybackActor() =
 ```
 
 With `Akka.FSharp.API.Extensions` you can handle `actor`'s lifecycle events directly through user predefinied messages.
-The idea was "borrowed" from the excellent [Akka.Net](http://getakka.net/) F# Api implementation [Akkling](https://github.com/Horusiath/Akkling/wiki/Managing-actor's-lifecycle) although the implementation is different and based directly on the original Akka.Net F# Api.
+The idea was "borrowed" from the excellent [Akka.Net](http://getakka.net/) F# Api implementation called [Akkling](https://github.com/Horusiath/Akkling/wiki/Managing-actor's-lifecycle), although the implementation is different and based directly on the original Akka.Net F# Api.
 
-### Simple usage:
+#### Simple usage:
 
 Let's say we would like to handle the `PreStart` method:
 
@@ -76,7 +76,8 @@ You can create simply stateful actors with `become` function. An example is more
 		| MyName of string
 
 	let rec namePrinter lastName = function
-		| Print -> printfn "Last name was %s?" lastName |> empty
+		| Print -> printfn "Last name was %s?" lastName
+				   become (namePrinter lastName)
 		| MyName(who) ->
 			printfn "Hello %s!" who
 			become (namePrinter who)
