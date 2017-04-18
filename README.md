@@ -12,9 +12,9 @@ PM> Install-Package Akka.NET.FSharp.API.Extensions
 ```
 
 ### Overriding Actor's Lifecycle
-if you use extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you have certainly noticed that there are no means to override all of the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
+if you use extensively `actor` Computation Expression from the original [Akka.FSharp](https://github.com/akkadotnet/akka.net/blob/dev/src/core/Akka.FSharp/FsApi.fs#L191-L322) package, you have certainly noticed that there are no way to handle the actor's lifecycle (`PreStart`, `PostStop`, `PreRestart`, `PostRestart`).
 
-One way of doing it is usesing types instead of `actor` computation expression. Here is an example:
+One way to achieve that is through types instead of `actor` computation expression. Here is an example:
 
 ```fsharp
 type PlaybackActor() =    
@@ -41,46 +41,29 @@ type PlaybackActor() =
         base.PostRestart(e)
 ```
 
-With `Akka.Fsharp.API.Extensions` you can spawn `actor`'s with two new functions, taking overrides functions as parameters. The new functions are definied as follows:
-
-The `spawnOptOvrd` is based on the original `spawnOpt`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
-
-```fsharp
- let spawnOptOvrd (actorFactory : IActorRefFactory) 
- 				  (name : string) 
- 				  (f : Actor<'Message> -> Cont<'Message, 'Returned>) 
-        		  (options : SpawnOption list) (overrides : LifecycleOverride) : IActorRef =
-        // body of the function
-```
-
-The `spawnOvrd` is based on the original `spawn`. As the last parameter (`overrides : LifecycleOverride`) you can pass your overriding lifecycle functions. Here is the function signature:
-
-```fsharp
-let spawnOvrd (actorFactory : IActorRefFactory) 
-			  (name : string) 
-			  (f : Actor<'Message> -> Cont<'Message, 'Returned>)
-        	  (overrides : LifecycleOverride) : IActorRef = 
-        // body of the function
-```
+With `Akka.FSharp.API.Extensions` you can handle `actor`'s lifecycle events directly through user predefinied messages.
+The idea was "borrowed" from the excellent [Akka.Net](http://getakka.net/) F# Api implementation [Akkling](https://github.com/Horusiath/Akkling/wiki/Managing-actor's-lifecycle) although the implementation is different and based directly on the original Akka.Net F# Api.
 
 ### Simple usage:
 
-Let's say we would lile to override the `PostRestart` method. We can supply the overriding function body as follows:
+Let's say we would like to handle the `PreStart` method:
 
 ```fsharp
-let postRestart = Some(fun (baseFn : exn -> unit) -> /* you can log here */ )
-    
-    use system = System.create "testSystem" (Configuration.load())
-    let actor = 
-        spawnOptOvrd system "actorSys" 
-        <| actorOf2 (fun mailbox (msg : string) ->
-                if msg = "restart" then
-                    failwith "System must be restarted"
-                else
-                    mailbox.Sender() <! msg)
-        <| [ SpawnOption.SupervisorStrategy (Strategy.OneForOne (fun error ->
-                Directive.Restart)) ]
-        <| {defOvrd with PostRestart = postRestart}
+	use system = System.create "actor-system" (Configuration.load())
+		let actor = 
+			spawn system "actor" 
+			<| fun mailbox ->
+				let rec loop() = actor {
+					let! (msg : obj) = mailbox.Receive()
+					match msg with
+					| LifecycleEvent e -> 
+						match e with
+						| PreStart -> () // do whatever you need to do
+						| _ -> ()
+					| _ -> ()
+					return! loop ()
+				}
+				loop ()
 ```
 
 ### Stateful Actors
