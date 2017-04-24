@@ -7,41 +7,49 @@ module Actor =
     open Akka.FSharp.Linq
     open Microsoft.FSharp.Linq
 
-    type LifecycleMessage = 
+    type ActorMessage<'Message> =
+        | Lifecycle of LifecycleMessage
+        | Message of 'Message
+
+    and LifecycleMessage = 
         | PreStart
         | PostStop
         | PreRestart of cause : exn * message : obj
         | PostRestart of cause : exn
 
-    let (|LifecycleEvent|_|) (msg: obj) =
-        if msg :? LifecycleMessage
-        then Some (msg :?> LifecycleMessage)
-        else None
-    
     type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>) as this =
         inherit FunActor<'Message, 'Returned>(actor)
 
         let mutable postStopWasHandled = false
         
-        member __.Handle (msg: obj) = base.OnReceive(msg)
+        member __.Handle (msg : obj) = 
+            let conv = match msg with
+                       | :? LifecycleMessage -> Lifecycle (msg :?> LifecycleMessage)
+                       | :? ActorMessage<_> -> msg :?> ActorMessage<'Returned>
+                       | _ -> Message (msg :?> 'Returned)
+            base.OnReceive(conv)
 
         override this.OnReceive msg = this.Handle msg
 
         override this.PreStart() = 
+            printfn "PreStart"
             base.PreStart ()
             this.Handle PreStart
 
         override this.PostStop() =
             if not postStopWasHandled then
+                printfn "PostStop"
                 postStopWasHandled <- true
                 base.PostStop ()
                 this.Handle PostStop
 
         override this.PreRestart(exn, msg) =
+            printfn "PreRestart"
             base.PreRestart (exn, msg)
             this.Handle(PreRestart(exn, msg))
 
         override this.PostRestart(exn) =
+            printfn "PostRestart"
             base.PostRestart (exn)
             this.Handle(PostRestart exn)
 

@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E432BE18
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{98606AC9-8C1F-4FBF-ACF5-24420F9308CE}"
 	ProjectSection(SolutionItems) = preProject
+		examples\Lifecycle.fsx = examples\Lifecycle.fsx
 		examples\Statefull.fsx = examples\Statefull.fsx
 	EndProjectSection
 EndProject

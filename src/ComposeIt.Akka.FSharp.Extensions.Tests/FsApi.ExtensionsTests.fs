@@ -21,9 +21,9 @@ let ``can override PreStart method when starting actor with computation expressi
         spawn system "actor" 
         <| fun mailbox ->
             let rec loop() = actor {
-                let! (msg : obj) = mailbox.Receive()
+                let! msg = mailbox.Receive()
                 match msg with
-                | LifecycleEvent e -> 
+                | Lifecycle e -> 
                     match e with
                     | PreStart -> preStartCalled := true
                     | _ -> ()
@@ -48,9 +48,9 @@ let ``can override PostStop methods when starting actor with computation express
         spawn system "actor" 
         <| fun mailbox ->
             let rec loop() = actor {
-                let! (msg : obj) = mailbox.Receive()
+                let! msg = mailbox.Receive()
                 match msg with
-                | LifecycleEvent e -> 
+                | Lifecycle e -> 
                     match e with
                     | PostStop -> postStopCalled := true
                     | _ -> ()
@@ -74,13 +74,13 @@ let ``can override PreRestart methods when starting actor with computation expre
         spawnOpt system "actor" 
         <| fun mailbox ->
             let rec loop() = actor {
-                let! (msg : obj) = mailbox.Receive()
+                let! msg = mailbox.Receive()
                 match msg with
-                | LifecycleEvent e -> 
+                | Lifecycle e -> 
                     match e with
                     | PreRestart(_, _) -> preRestartCalled := true
                     | _ -> ()
-                | :? string as m -> 
+                | Message m -> 
                     if m = "restart"
                     then failwith "System must be restarted"
                     else mailbox.Sender() <! m
@@ -106,13 +106,13 @@ let ``can override PostRestart methods when starting actor with computation expr
         spawnOpt system "actor" 
         <| fun mailbox ->
             let rec loop() = actor {
-                let! (msg : obj) = mailbox.Receive()
+                let! msg = mailbox.Receive()
                 match msg with
-                | LifecycleEvent e -> 
+                | Lifecycle e -> 
                     match e with
                     | PostRestart exn -> postRestartCalled := true
                     | _ -> ()
-                | :? string as m -> 
+                | Message m -> 
                     if m = "restart"
                     then failwith "System must be restarted"
                     else mailbox.Sender() <! m
