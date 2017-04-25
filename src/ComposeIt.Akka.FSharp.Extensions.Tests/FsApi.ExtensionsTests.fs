@@ -138,10 +138,13 @@ let ``can change behaviour with become`` () =
     let answer = ref "no one"
 
     let rec namePrinter lastName = function
-        | Print -> answer := sprintf "Last name was %s?" lastName 
-                   empty
-        | MyName(who) ->
-            become (namePrinter who)
+        | Message m ->
+        match m with
+            | Print -> answer := sprintf "Last name was %s?" lastName 
+                       empty
+            | MyName(who) ->
+                become (namePrinter who)
+        | _ -> become (namePrinter lastName)
 
     use system = System.create "testSystem" (Configuration.load())
     let actor = 

@@ -13,11 +13,14 @@ type Message =
     | MyName of string
 
 let rec namePrinter lastName = function
-    | Print -> printfn "Last name was %s?" lastName
-               become (namePrinter lastName)
-    | MyName(who) ->
-        printfn "Hello %s!" who
-        become (namePrinter who)
+    | Message m ->
+    match m with
+        | Print -> printfn "Last name was %s?" lastName
+                   become (namePrinter lastName)
+        | MyName(who) ->
+            printfn "Hello %s!" who
+            become (namePrinter who)
+    | _ -> become (namePrinter lastName)
 
 let actor = 
     spawn system "actor" 
