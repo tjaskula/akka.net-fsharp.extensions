@@ -9,15 +9,20 @@ module Actor =
     open Microsoft.FSharp.Linq
     open Microsoft.FSharp.Reflection
 
-    type ActorMessage<'Message> =
-        | Lifecycle of LifecycleMessage
-        | Message of 'Message
-
-    and LifecycleMessage = 
+    type LifecycleMessage = 
         | PreStart
         | PostStop
         | PreRestart of cause : exn * message : obj
         | PostRestart of cause : exn
+
+    type ActorMessage =
+        | Lifecycle of LifecycleMessage
+        | Message of obj
+
+    let (|Message|_|) (msg : ActorMessage) = 
+        match msg with
+        | Message m -> Some(unbox m)
+        | _ -> None
 
     type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>) as this =
         inherit FunActor<'Message, 'Returned>(actor)
@@ -29,7 +34,6 @@ module Actor =
                 match msg with
                 | :? LifecycleMessage -> Lifecycle (msg :?> LifecycleMessage)
                 | _ -> Message(msg)
-            
             base.OnReceive(conv)
 
         override this.OnReceive msg = this.Handle msg
