@@ -69,7 +69,7 @@ Let's say we would like to handle the `PreStart` method:
 #### Handling Lifecycle message along with other messages
 
 The `mailbox.Receive()` returns a message of type `ActorMessage`. This is a wrapper around lifecycle messages and regular ones.
-You gave to handle it accordingly:
+You have to handle it accordingly:
 
 ```fsharp
 	use system = System.create "actor-system" (Configuration.load())
