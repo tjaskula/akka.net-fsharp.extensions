@@ -5,7 +5,9 @@ module Actor =
     open Akka.Actor
     open Akka.FSharp
     open Akka.FSharp.Linq
+    open System
     open Microsoft.FSharp.Linq
+    open Microsoft.FSharp.Reflection
 
     type ActorMessage<'Message> =
         | Lifecycle of LifecycleMessage
@@ -22,11 +24,12 @@ module Actor =
 
         let mutable postStopWasHandled = false
         
-        member __.Handle (msg : obj) = 
-            let conv = match msg with
-                       | :? LifecycleMessage -> Lifecycle (msg :?> LifecycleMessage)
-                       | :? ActorMessage<_> -> msg :?> ActorMessage<'Returned>
-                       | _ -> Message (msg :?> 'Returned)
+        member __.Handle (msg : obj) =
+            let conv = 
+                match msg with
+                | :? LifecycleMessage -> Lifecycle (msg :?> LifecycleMessage)
+                | _ -> Message(msg)
+            
             base.OnReceive(conv)
 
         override this.OnReceive msg = this.Handle msg
@@ -53,7 +56,7 @@ module Actor =
             base.PostRestart (exn)
             this.Handle(PostRestart exn)
 
-    type ExpressionExt = 
+    and ExpressionExt = 
         static member ToExpression(f : System.Linq.Expressions.Expression<System.Func<FunActorExt<'Message, 'v>>>) = toExpression<FunActorExt<'Message, 'v>> f
         static member ToExpression<'Actor>(f : Quotations.Expr<(unit -> 'Actor)>) = toExpression<'Actor> (QuotationEvaluator.ToLinqExpression f)
 
