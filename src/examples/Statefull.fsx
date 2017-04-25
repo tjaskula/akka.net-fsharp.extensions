@@ -41,18 +41,21 @@ type ActorState =
     | Stopped of string
 
 let rec moviePlayer lastState = function
-    | PlayMovie m -> 
-        match lastState with
-        | Playing _ -> printfn "Error: cannot start playing another movie before stopping existing one"
-        | Stopped t -> printfn "Currently watching %s" t
-                       printfn "User Actor has now become Playing"
-        become (moviePlayer (Playing m))        
-    | StopMovie -> 
-        match lastState with
-        | Playing t -> printfn "Stopped watching %s" t
-                       printfn "User Actor has now become Stopped"
-        | Stopped _ -> printfn "Error: cannot stop if nothing is playing"
-        become (moviePlayer (Stopped ""))                    
+    | Message m ->
+        match m with
+        | PlayMovie m -> 
+            match lastState with
+            | Playing _ -> printfn "Error: cannot start playing another movie before stopping existing one"
+            | Stopped t -> printfn "Currently watching %s" t
+                           printfn "User Actor has now become Playing"
+            become (moviePlayer (Playing m))        
+        | StopMovie -> 
+            match lastState with
+            | Playing t -> printfn "Stopped watching %s" t
+                           printfn "User Actor has now become Stopped"
+            | Stopped _ -> printfn "Error: cannot stop if nothing is playing"
+            become (moviePlayer (Stopped "")) 
+     | _ -> become (moviePlayer lastState)                   
     
 let aref = 
     spawn system "UserActorBecome"

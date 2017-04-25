@@ -16,7 +16,7 @@ let actor =
         let rec loop() = actor {
             let! msg = mailbox.Receive()
             match msg with
-            | LifecycleEvent e -> 
+            | Lifecycle e -> 
                 match e with
                 | PreRestart(_, _) -> preRestartCalled := true
                 | _ -> ()
