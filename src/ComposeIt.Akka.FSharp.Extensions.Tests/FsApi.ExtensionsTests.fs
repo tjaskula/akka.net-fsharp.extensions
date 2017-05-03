@@ -164,7 +164,7 @@ type PlayerMessage =
 [<Fact>]
 let ``should forward not expected messages types to unhandled mailbox`` () =
     
-    let answer = ref (Message(0))
+    let answer = ref false
 
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
@@ -177,8 +177,9 @@ let ``should forward not expected messages types to unhandled mailbox`` () =
                     | Message m -> 
                         match m with
                         | msg when msg.UserId > 40 -> ()
-                        | t -> answer := msg
-                               mailbox.Unhandled msg
+                        | _ -> mailbox.Unhandled msg
+                    | _ -> answer := true
+                           mailbox.Unhandled msg
 
                 return! loop()
             }
@@ -188,6 +189,7 @@ let ``should forward not expected messages types to unhandled mailbox`` () =
     actor <! {MovieTitle = "Boolean Lies"; UserId = 77}
     actor <! {MovieTitle = "Codenan the Destroyer"; UserId = 1}
     actor <! 87
+    Task.Delay(100).Wait()
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
-    answer.Value |> equals (Message(87))
+    answer.Value |> equals true

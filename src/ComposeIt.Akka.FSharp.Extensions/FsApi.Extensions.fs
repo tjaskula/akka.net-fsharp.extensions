@@ -21,7 +21,11 @@ module Actor =
 
     let (|Message|_|) (msg : ActorMessage) = 
         match msg with
-        | Message m -> Some(unbox m)
+        | Message m -> 
+            try
+                Some(unbox m)
+            with
+            | :? System.InvalidCastException -> None 
         | _ -> None
 
     type FunActorExt<'Message, 'Returned>(actor : Actor<'Message> -> Cont<'Message, 'Returned>) as this =
