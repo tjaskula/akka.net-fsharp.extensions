@@ -12,7 +12,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Compose It")>]
 [<assembly: AssemblyProduct("ComposeIt.Akka.FSharp.Extensions")>]
-[<assembly: AssemblyCopyright("Copyright © 2015 Compose It")>]
+[<assembly: AssemblyCopyright("Copyright © 2017 Compose It")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 

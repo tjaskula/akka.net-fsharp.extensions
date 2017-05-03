@@ -8,12 +8,12 @@ open Fake
 
 open System
 
-let authors = ["Tomasz Jaskula (Compose IT)"]
+let authors = ["Tomasz Jaskula (@tjaskula)"]
 
 // project name and description
 let projectName = "Akka.NET.FSharp.API.Extensions"
-let projectDescription = "Set of extensions to the Akka.NET F# API. Some features are not available in the standard F# API like for example the ability to provide functions to override actors lifecycles, which might be usefull so those are provided here."
-let projectSummary = "Set of extensions to the Akka.NET F# API."
+let projectDescription = "Set of extensions to the Akka.NET F# API that are not available in the standard library. This includes actor lifecycle managment and stateful actors."
+let projectSummary = "Set of extensions to the official Akka.NET F# API."
 
 // directories
 let buildDir = "./src/ComposeIt.Akka.FSharp.Extensions/bin"

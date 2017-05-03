@@ -12,8 +12,8 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>
-    <copyright>Copyright Compose It 2015</copyright>    
-    <tags>Akka FSharp.API</tags>
+    <copyright>Copyright Compose It 2017</copyright>    
+    <tags>akka actors actor model Akka concurrency F# FSharp</tags>
     @dependencies@
     @references@
   </metadata>
