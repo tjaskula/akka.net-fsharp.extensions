@@ -162,11 +162,15 @@ let ``can handle a message with actorOf2`` () =
                        empty
         | _ -> mailbox.Sender() <! "failure"
                empty
+
+    let emptyHandle (mailbox : Actor<'a>) (msg: obj) =
+        mailbox.Sender() <! msg
+        empty
     
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
         spawn system "actor" 
-        <| actorOf2 (handleMessage)
+        <| actorOf2 (emptyHandle)
 
     let answer = (actor <? "msg" |> Async.RunSynchronously)
     system.Terminate() |> ignore
