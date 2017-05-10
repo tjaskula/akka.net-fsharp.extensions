@@ -139,8 +139,7 @@ let ``can change behaviour with become`` () =
         match m with
             | Print -> answer := sprintf "Last name was %s?" lastName 
                        empty
-            | MyName(who) ->
-                become (namePrinter who)
+            | MyName(who) -> become (namePrinter who)
         | _ -> become (namePrinter lastName)
 
     use system = System.create "testSystem" (Configuration.load())
@@ -154,6 +153,26 @@ let ``can change behaviour with become`` () =
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (answer.Value) |> equals ("Last name was Marcel?")
+
+[<Fact>]
+let ``can handle a message with actorOf2`` () =
+
+    let handleMessage (mailbox : Actor<'a>) = function
+        | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
+                       empty
+        | _ -> mailbox.Sender() <! "failure"
+               empty
+    
+    use system = System.create "testSystem" (Configuration.load())
+    let actor = 
+        spawn system "actor" 
+        <| actorOf2 (handleMessage)
+
+    let answer = (actor <? "msg" |> Async.RunSynchronously)
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
+    answer |> equals "success msg"
+    
 
 type PlayMovieMessage = {MovieTitle : string; UserId : int}
 

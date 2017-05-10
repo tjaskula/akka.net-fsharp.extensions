@@ -102,6 +102,18 @@ module Actor =
         loop()
 
     /// <summary>
+    /// Wraps provided function with actor behavior. 
+    /// It will be invoked each time, an actor will receive a message. 
+    /// </summary>
+    let actorOf2 (fn : Actor<'Message> -> 'Message -> Cont<'Message, 'Returned>) (mailbox : Actor<'Message>) : Cont<'Message, 'Returned> = 
+        let rec loop() = 
+            actor {
+                let! msg = mailbox.Receive()
+                return! fn mailbox msg
+            }
+        loop()
+
+    /// <summary>
     /// Returns a continuation stopping the message handling pipeline.
     /// </summary>
     let empty : Cont<'Message, 'Returned> = Return ()
