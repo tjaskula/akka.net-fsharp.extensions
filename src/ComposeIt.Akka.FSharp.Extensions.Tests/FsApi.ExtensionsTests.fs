@@ -154,28 +154,78 @@ let ``can change behaviour with become`` () =
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (answer.Value) |> equals ("Last name was Marcel?")
 
+
 [<Fact>]
-let ``can handle a message with actorOf2`` () =
+let ``can handle a message with actorOf in nested actor`` () =
+    
+    let answer = ref "no one"
 
-    let handleMessage (mailbox : Actor<'a>) = function
-        | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
+    let rec namePrinter lastName = function
+        | Message m ->
+            match m with
+            | Print -> answer := sprintf "Last name was %s?" lastName 
                        empty
-        | _ -> mailbox.Sender() <! "failure"
-               empty
-
-    let emptyHandle (mailbox : Actor<'a>) (msg: obj) =
-        mailbox.Sender() <! msg
-        empty
+            | MyName(who) -> become (namePrinter who)
+        | _ -> become (namePrinter lastName)
     
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
         spawn system "actor" 
-        <| actorOf2 (emptyHandle)
-
-    let answer = (actor <? "msg" |> Async.RunSynchronously)
+        <| fun mailbox ->
+            let rec loop (childs: Map<int, IActorRef>)  = actor {
+                let createChildIfNotExists id =
+                    if not (childs.ContainsKey id) then
+                        let child = 
+                                spawn mailbox (sprintf "Child%i" id)
+                                <| actorOf(namePrinter "no one")
+                        let newChilds = childs.Add (id, child)
+                        newChilds
+                    else childs
+                
+                let! msg = mailbox.Receive()
+                let newChilds =
+                    match msg with
+                    | Lifecycle _ -> childs
+                    | Message m -> 
+                        let newChilds = createChildIfNotExists 1
+                        let childActorRef = newChilds.[1]
+                        childActorRef <! m
+                        newChilds
+                    | _ -> mailbox.Sender() <! msg
+                           childs
+                return! loop newChilds
+            }
+            loop Map.empty
+    actor <! MyName "Tomasz"
+    actor <! MyName "Marcel"
+    actor <! Print
+    Task.Delay(100).Wait()
     system.Terminate() |> ignore
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
-    answer |> equals "success msg"
+    (answer.Value) |> equals ("Last name was Marcel?")
+
+//[<Fact>]
+//let ``can handle a message with actorOf2`` () =
+//
+//    let handleMessage (mailbox : Actor<'a>) = function
+//        | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
+//                       empty
+//        | _ -> mailbox.Sender() <! "failure"
+//               empty
+//
+//    let emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
+//        mailbox.Sender() <! msg
+//        empty
+//    
+//    use system = System.create "testSystem" (Configuration.load())
+//    let actor = 
+//        spawn system "actor" 
+//        <| actorOf2 (emptyHandle)
+//
+//    let answer = (actor <? "msg" |> Async.RunSynchronously)
+//    system.Terminate() |> ignore
+//    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
+//    answer |> equals "success msg"
     
 
 type PlayMovieMessage = {MovieTitle : string; UserId : int}
