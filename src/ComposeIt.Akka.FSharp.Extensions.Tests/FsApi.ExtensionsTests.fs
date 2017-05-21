@@ -231,7 +231,6 @@ let ``can handle a message with actorOf2`` () =
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     answer |> equals "success msg"
     
-
 type PlayMovieMessage = {MovieTitle : string; UserId : int}
 
 type PlayerMessage =
