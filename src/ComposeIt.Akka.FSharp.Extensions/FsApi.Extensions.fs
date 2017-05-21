@@ -88,7 +88,6 @@ module Actor =
     let spawn (actorFactory : IActorRefFactory) (name : string) (f : Actor<'Message> -> Cont<'Message, 'Returned>) : IActorRef = 
         spawnOpt actorFactory name f []
 
-
     /// <summary>
     /// Wraps provided function with actor behavior. 
     /// It will be invoked each time, an actor will receive a message. 

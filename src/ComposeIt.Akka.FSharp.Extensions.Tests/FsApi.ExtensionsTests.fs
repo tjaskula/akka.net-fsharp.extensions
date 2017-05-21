@@ -204,28 +204,28 @@ let ``can handle a message with actorOf in nested actor`` () =
     system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
     (answer.Value) |> equals ("Last name was Marcel?")
 
-//[<Fact>]
-//let ``can handle a message with actorOf2`` () =
-//
-//    let handleMessage (mailbox : Actor<'a>) = function
-//        | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
-//                       empty
-//        | _ -> mailbox.Sender() <! "failure"
-//               empty
-//
-//    let emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
-//        mailbox.Sender() <! msg
-//        empty
-//    
-//    use system = System.create "testSystem" (Configuration.load())
-//    let actor = 
-//        spawn system "actor" 
-//        <| actorOf2 (emptyHandle)
-//
-//    let answer = (actor <? "msg" |> Async.RunSynchronously)
-//    system.Terminate() |> ignore
-//    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
-//    answer |> equals "success msg"
+[<Fact>]
+let ``can handle a message with actorOf2`` () =
+
+    let handleMessage (mailbox : Actor<'a>) = function
+        | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
+                       empty
+        | _ -> mailbox.Sender() <! "failure"
+               empty
+
+    let emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
+        mailbox.Sender() <! msg
+        empty
+    
+    use system = System.create "testSystem" (Configuration.load())
+    let actor = 
+        spawn system "actor" 
+        <| actorOf2 (emptyHandle)
+
+    let answer = (actor <? "msg" |> Async.RunSynchronously)
+    system.Terminate() |> ignore
+    system.WhenTerminated.Wait(TimeSpan.FromSeconds(2.)) |> ignore
+    answer |> equals "success msg"
     
 
 type PlayMovieMessage = {MovieTitle : string; UserId : int}
