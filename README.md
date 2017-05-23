@@ -1,7 +1,7 @@
 # Akka.FSharp.API.Extensions
 ## Set of extensions to the Akka.NET F# API
 
-This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs. [![NuGet](https://img.shields.io/badge/nuget-v0.2.3.0-blue.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
+This package contains some extensions to the [Akka.Net](http://getakka.net/) F# APIs. [![NuGet](https://img.shields.io/badge/nuget-v0.2.4.0-blue.svg)](https://www.nuget.org/packages/Akka.NET.FSharp.API.Extensions/)
 
 ### Installation
 

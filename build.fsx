@@ -64,7 +64,7 @@ Target "CreatePackage" (fun _ ->
             OutputPath = packagingRoot
             Summary = projectSummary
             WorkingDir = packagingDir
-            Version = "0.2.3.0"
+            Version = "0.2.4.0"
             Dependencies =
                 ["Akka", GetPackageVersion "./packages/" "Akka"
                  "Akka.FSharp", GetPackageVersion "./packages/" "Akka.FSharp"
