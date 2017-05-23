@@ -207,24 +207,17 @@ let ``can handle a message with actorOf in nested actor`` () =
 [<Fact>]
 let ``can handle a message with actorOf2`` () =
 
-    let handleMessage (mailbox : Actor<'a>) = function
+    let rec handleMessage (mailbox : Actor<'a>) = function
+        | Lifecycle _ -> become(handleMessage mailbox)
         | Message m -> mailbox.Sender() <! (sprintf "success %s" m)
                        empty
         | _ -> mailbox.Sender() <! "failure"
                empty
 
-    let rec emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
-        match msg with
-        | Lifecycle _ -> become(emptyHandle mailbox)
-        | Message m -> mailbox.Sender() <! sprintf "success %s" m
-                       become(emptyHandle mailbox)
-        | _ -> mailbox.Sender() <! msg
-               become(emptyHandle mailbox)
-
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
         spawn system "actor" 
-        <| actorOf2 (emptyHandle)
+        <| actorOf2 (handleMessage)
 
     let answer = (actor <? "msg" |> Async.RunSynchronously)
     system.Terminate() |> ignore
