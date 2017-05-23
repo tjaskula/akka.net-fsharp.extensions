@@ -213,10 +213,14 @@ let ``can handle a message with actorOf2`` () =
         | _ -> mailbox.Sender() <! "failure"
                empty
 
-    let emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
-        mailbox.Sender() <! msg
-        empty
-    
+    let rec emptyHandle (mailbox : Actor<'a>) (msg: ActorMessage) =
+        match msg with
+        | Lifecycle _ -> become(emptyHandle mailbox)
+        | Message m -> mailbox.Sender() <! "ok"
+                       become(emptyHandle mailbox)
+        | _ -> mailbox.Sender() <! msg
+               become(emptyHandle mailbox)
+
     use system = System.create "testSystem" (Configuration.load())
     let actor = 
         spawn system "actor" 
