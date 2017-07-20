@@ -1,6 +1,6 @@
 source https://www.nuget.org/api/v2
 
-nuget Akka.FSharp 1.2.0 framework: >= net45
+nuget Akka.FSharp framework: >= net45
 nuget FAKE
-nuget NuGet.CommandLine 3.5.0 framework: >= net45
+nuget NuGet.CommandLine framework: >= net45
 nuget xunit 2.2.0 framework: >= net45
