@@ -1,7 +1,7 @@
 ﻿// sets the current directory to be same as the script directory
 System.IO.Directory.SetCurrentDirectory (__SOURCE_DIRECTORY__)
 
-#r @"./packages/FAKE.4.61.0/tools/FakeLib.dll"
+#r @"./packages/FAKE/tools/FakeLib.dll"
 #r "System.Configuration.dll"
 
 open Fake
