@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RIDER_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../../../Akka.FSharp.Extensions.nuspec" />
+    <content url="file://$MODULE_DIR$/../../../Install.ps1" />
+    <content url="file://$MODULE_DIR$/../../../build.cmd" />
+    <content url="file://$MODULE_DIR$/../../../build.fsx" />
+    <content url="file://$MODULE_DIR$/../../../build.sh" />
+    <content url="file://$MODULE_DIR$/../../../paket.dependencies" />
+    <content url="file://$MODULE_DIR$/../../../paket.lock" />
+    <content url="file://$MODULE_DIR$/../.." />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
