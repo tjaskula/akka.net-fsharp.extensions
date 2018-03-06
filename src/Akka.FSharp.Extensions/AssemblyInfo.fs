@@ -1,4 +1,4 @@
-﻿namespace ComposeIt.Akka.FSharp.Extensions.AssemblyInfo
+﻿namespace Akka.FSharp.Extensions.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices

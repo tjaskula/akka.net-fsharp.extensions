@@ -1,8 +1,8 @@
-﻿module ComposeIt.Akka.FSharp.Extensions.Tests
+﻿module Akka.FSharp.Extensions.Tests
 
 open Akka.FSharp
 open Akka.Actor
-open ComposeIt.Akka.FSharp.Extensions.Actor
+open Akka.FSharp.Extensions.Actor
 open System
 open System.Threading.Tasks
 open Xunit

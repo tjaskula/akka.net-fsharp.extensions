@@ -6,8 +6,8 @@ module Actor =
     open Akka.FSharp
     open Akka.FSharp.Linq
     open System
-    open Microsoft.FSharp.Linq
     open Microsoft.FSharp.Reflection
+    open FSharp.Quotations.Evaluator
 
     type LifecycleMessage = 
         | PreStart

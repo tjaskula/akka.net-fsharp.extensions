@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{04468435-790D-4E92-AF45-54412BC67BA7}"
 	ProjectSection(SolutionItems) = preProject
 		..\paket.dependencies = ..\paket.dependencies
 		..\paket.lock = ..\paket.lock
 	EndProjectSection
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.ExtensionsOLD", "ComposeIt.Akka.FSharp.ExtensionsOLD\ComposeIt.Akka.FSharp.ExtensionsOLD.fsproj", "{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ComposeIt.Akka.FSharp.Extensions.TestsOLD", "ComposeIt.Akka.FSharp.Extensions.TestsOLD\ComposeIt.Akka.FSharp.Extensions.TestsOLD.fsproj", "{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E432BE18-36CF-48D2-BBB6-0CF0B2AB1A27}"
 	ProjectSection(SolutionItems) = preProject
@@ -30,24 +26,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{9860
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions", "Akka.FSharp.Extensions\Akka.FSharp.Extensions.fsproj", "{7437E4E4-E286-4A46-91D1-E3F2497B46F9}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions.Tests", "Akka.FSharp.Extensions.Tests\Akka.FSharp.Extensions.Tests.fsproj", "{43383D16-FEA4-4987-9321-4EAD98448DC9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E441BDE-5DD4-46C6-BAE3-77CFAD1B747A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9ACC2E68-98DD-4940-AF8B-D0E290EFA0CA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7437E4E4-E286-4A46-91D1-E3F2497B46F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7437E4E4-E286-4A46-91D1-E3F2497B46F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7437E4E4-E286-4A46-91D1-E3F2497B46F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7437E4E4-E286-4A46-91D1-E3F2497B46F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43383D16-FEA4-4987-9321-4EAD98448DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43383D16-FEA4-4987-9321-4EAD98448DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43383D16-FEA4-4987-9321-4EAD98448DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43383D16-FEA4-4987-9321-4EAD98448DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

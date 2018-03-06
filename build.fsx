@@ -16,7 +16,7 @@ let projectDescription = "Set of extensions to the Akka.NET F# API that are not 
 let projectSummary = "Set of extensions to the official Akka.NET F# API."
 
 // directories
-let buildDir = "./src/ComposeIt.Akka.FSharp.Extensions/bin"
+let buildDir = "./src/Akka.FSharp.Extensions/bin"
 let packagingRoot = "./packaging/"
 let packagingDir = packagingRoot @@ "AkkaFSharpExtensions"
 
@@ -24,7 +24,7 @@ let buildMode = getBuildParamOrDefault "buildMode" "Release"
 
 MSBuildDefaults <- { 
     MSBuildDefaults with 
-        ToolsVersion = Some "14.0"
+        ToolsVersion = Some "15.0"
         Verbosity = Some MSBuildVerbosity.Minimal }
 
 Target "Clean" (fun _ ->
@@ -33,7 +33,7 @@ Target "Clean" (fun _ ->
 
 let setParams defaults = {
     defaults with
-        ToolsVersion = Some("14.0")
+        ToolsVersion = Some("15.0")
         Targets = ["Build"]
         Properties =
             [
@@ -52,9 +52,9 @@ Target "CreatePackage" (fun _ ->
 
     CleanDirs [net45Dir]
 
-    CopyFile net45Dir (buildDir @@ "Release/ComposeIt.Akka.FSharp.Extensions.dll")
-    CopyFile net45Dir (buildDir @@ "Release/ComposeIt.Akka.FSharp.Extensions.XML")
-    CopyFile net45Dir (buildDir @@ "Release/ComposeIt.Akka.FSharp.Extensions.pdb")
+    CopyFile net45Dir (buildDir @@ "Release/Akka.FSharp.Extensions.dll")
+    CopyFile net45Dir (buildDir @@ "Release/Akka.FSharp.Extensions.XML")
+    CopyFile net45Dir (buildDir @@ "Release/Akka.FSharp.Extensions.pdb")
 
     NuGet (fun p -> 
         {p with
@@ -69,8 +69,7 @@ Target "CreatePackage" (fun _ ->
                 ["Akka", GetPackageVersion "./packages/" "Akka"
                  "Akka.FSharp", GetPackageVersion "./packages/" "Akka.FSharp"
                  "FsPickler", GetPackageVersion "./packages/" "FsPickler"
-                 "FSPowerPack.Core.Community", GetPackageVersion "./packages/" "FSPowerPack.Core.Community"
-                 "FSPowerPack.Linq.Community", GetPackageVersion "./packages/" "FSPowerPack.Linq.Community"
+                 "FSharp.Quotations.Evaluator", GetPackageVersion "./packages/" "FSharp.Quotations.Evaluator"
                  "Newtonsoft.Json", GetPackageVersion "./packages/" "Newtonsoft.Json"]
             Files = [
                      (@"lib\**\*.*", Some "lib", None)
