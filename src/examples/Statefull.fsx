@@ -1,6 +1,6 @@
-﻿#r @"../Akka.FSharp.Extensions/bin/Debug/Akka.dll"
-#r @"../Akka.FSharp.Extensions/bin/Debug/Akka.FSharp.dll"
-#r @"../Akka.FSharp.Extensions/bin/Debug/Akka.FSharp.Extensions.dll"
+﻿#r @"../Akka.FSharp.Extensions/bin/Debug/net452/Akka.dll"
+#r @"../Akka.FSharp.Extensions/bin/Debug/net452/Akka.FSharp.dll"
+#r @"../Akka.FSharp.Extensions/bin/Debug/netstandard2.0/Akka.FSharp.Extensions.dll"
 
 open Akka.FSharp
 open Akka.FSharp.Extensions.Actor
