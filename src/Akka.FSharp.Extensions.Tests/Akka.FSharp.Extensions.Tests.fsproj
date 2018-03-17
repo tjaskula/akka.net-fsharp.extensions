@@ -1,6 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net461</TargetFrameworks>
+    <Version>0.3.5</Version>
+    <Authors>Tomasz Jaskula</Authors>
+    <Company />
+    <Description>Set of extensions to the Akka.NET F# API that are not available in the standard library. This includes actor lifecycle managment and stateful actors.</Description>
+    <Copyright>Tomasz Jaskula</Copyright>
+    <PackageLicenseUrl>https://github.com/tjaskula/akka.net-fsharp.extensions/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/tjaskula/akka.net-fsharp.extensions</PackageProjectUrl>
+    <PackageTags>akka.net fsharp</PackageTags>
+    <PackageReleaseNotes>Moving to netstandard2.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FsApi.ExtensionsTests.fs" />
