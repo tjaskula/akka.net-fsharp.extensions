@@ -17,6 +17,7 @@ nuget Fake.DotNet.Testing.MSpec
 nuget Fake.DotNet.Testing.XUnit2
 nuget Fake.DotNet.Testing.NUnit
 nuget Fake.Tools.Git
+nuget xunit.runner.console
 nuget Octokit //"
 #load "./.fake/build.fsx/intellisense.fsx"
 
@@ -113,6 +114,7 @@ Target.create "Build" (fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
+// Doesn't work because of the issue https://github.com/fsharp/FAKE/issues/2094
 open Fake.DotNet.Testing
 
 open Fake.DotNet.Testing.XUnit2
@@ -122,7 +124,7 @@ Target.create "RunTests" (fun _ ->
         { p with
             TimeOut = System.TimeSpan.FromMinutes 20.
             XmlOutputPath = Some "TestResults.xml"
-            ToolPath = "packages/xunit.runner.console/tools/net452/xunit.console.exe" })
+            ToolPath = "~/.nuget/packages/xunit.runner.console/2.4.0/tools/net452/xunit.console.exe"})
 )
 
 // --------------------------------------------------------------------------------------
@@ -181,6 +183,7 @@ Target.create "All" (fun _ -> ())
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
+  ==> "RunTests"
   ==> "All"
 
 "All" 
