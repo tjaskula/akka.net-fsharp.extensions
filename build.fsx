@@ -117,6 +117,8 @@ Target.create "Build" (fun _ ->
 // Doesn't work because of the issue https://github.com/fsharp/FAKE/issues/2094
 open Fake.DotNet.Testing
 
+open Fake.DotNet
+
 open Fake.DotNet.Testing.XUnit2
 Target.create "RunTests" (fun _ ->
     !! testAssemblies
@@ -125,6 +127,17 @@ Target.create "RunTests" (fun _ ->
             TimeOut = System.TimeSpan.FromMinutes 20.
             XmlOutputPath = Some "TestResults.xml"
             ToolPath = "~/.nuget/packages/xunit.runner.console/2.4.0/tools/net452/xunit.console.exe"})
+)
+
+//---------------------------------------------------------------------------------------
+// Run dotnet core unit tests
+Target.create "RunDotNetCoreTests" (fun _ ->
+    DotNet.test(fun p ->
+        { p with
+            Framework = Some "netcoreapp2.1"
+            Configuration = DotNet.BuildConfiguration.fromString "Release"
+            NoBuild = true})
+        "src/Akka.FSharp.Extensions.Tests/Akka.FSharp.Extensions.Tests.fsproj"
 )
 
 // --------------------------------------------------------------------------------------
@@ -184,6 +197,7 @@ Target.create "All" (fun _ -> ())
   ==> "Build"
   ==> "CopyBinaries"
   //==> "RunTests"
+  ==> "RunDotNetCoreTests"
   ==> "All"
 
 "All" 
