@@ -183,7 +183,7 @@ Target.create "All" (fun _ -> ())
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
-  ==> "RunTests"
+  //==> "RunTests"
   ==> "All"
 
 "All" 
