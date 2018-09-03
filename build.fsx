@@ -203,5 +203,6 @@ Target.create "All" (fun _ -> ())
 "All" 
   ==> "NuGet"
   ==> "BuildPackage"
+  ==> "PublishNuget"
 
 Target.runOrDefault "All"
