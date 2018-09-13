@@ -3,34 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{04468435-790D-4E92-AF45-54412BC67BA7}"
-	ProjectSection(SolutionItems) = preProject
-		..\paket.dependencies = ..\paket.dependencies
-		..\paket.lock = ..\paket.lock
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E432BE18-36CF-48D2-BBB6-0CF0B2AB1A27}"
 	ProjectSection(SolutionItems) = preProject
-		..\Akka.FSharp.Extensions.nuspec = ..\Akka.FSharp.Extensions.nuspec
-		..\build.cmd = ..\build.cmd
-		..\build.fsx = ..\build.fsx
-		..\Install.ps1 = ..\Install.ps1
-		..\build.sh = ..\build.sh
+		Akka.FSharp.Extensions.nuspec = Akka.FSharp.Extensions.nuspec
+		build.cmd = build.cmd
+		build.fsx = build.fsx
+		Install.ps1 = Install.ps1
+		build.sh = build.sh
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{98606AC9-8C1F-4FBF-ACF5-24420F9308CE}"
 	ProjectSection(SolutionItems) = preProject
-		examples\Lifecycle.fsx = examples\Lifecycle.fsx
-		examples\Statefull.fsx = examples\Statefull.fsx
+		src\examples\Lifecycle.fsx = src\examples\Lifecycle.fsx
+		src\examples\Statefull.fsx = src\examples\Statefull.fsx
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions", "Akka.FSharp.Extensions\Akka.FSharp.Extensions.fsproj", "{7437E4E4-E286-4A46-91D1-E3F2497B46F9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions", "src\Akka.FSharp.Extensions\Akka.FSharp.Extensions.fsproj", "{7437E4E4-E286-4A46-91D1-E3F2497B46F9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions.Tests", "Akka.FSharp.Extensions.Tests\Akka.FSharp.Extensions.Tests.fsproj", "{43383D16-FEA4-4987-9321-4EAD98448DC9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions.Tests", "src\Akka.FSharp.Extensions.Tests\Akka.FSharp.Extensions.Tests.fsproj", "{43383D16-FEA4-4987-9321-4EAD98448DC9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{8FB199FD-4323-4954-9C8C-B09344601EAB}"
 ProjectSection(SolutionItems) = preProject
-	..\RELEASE_NOTES.md = ..\RELEASE_NOTES.md
+	RELEASE_NOTES.md = RELEASE_NOTES.md
 EndProjectSection
 EndProject
 Global

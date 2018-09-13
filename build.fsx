@@ -2,13 +2,30 @@
 // FAKE build script
 // --------------------------------------------------------------------------------------
 
-#r @"packages/FAKE/tools/FakeLib.dll"
-open Fake
-open Fake.Git
-open Fake.AssemblyInfoFile
-open Fake.ReleaseNotesHelper
-open System
+#r "paket:
+nuget Fake.Core.Target
+nuget Fake.Api.GitHub
+nuget Fake.Core.ReleaseNotes
+nuget Fake.DotNet.AssemblyInfoFile
+nuget Fake.DotNet.MSBuild
+nuget Fake.DotNet.Cli
+nuget Fake.DotNet.MSBuild
+nuget Fake.DotNet.NuGet
+nuget Fake.DotNet.Paket
+nuget Fake.DotNet.FSFormatting
+nuget Fake.DotNet.Testing.MSpec
+nuget Fake.DotNet.Testing.XUnit2
+nuget Fake.DotNet.Testing.NUnit
+nuget Fake.Tools.Git
+nuget Octokit //"
+#load "./.fake/build.fsx/intellisense.fsx"
+
 open System.IO
+open Fake.Core
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+open Fake.DotNet
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -53,56 +70,57 @@ let gitHome = "https://github.com/" + gitOwner
 let gitName = "akka.net-fsharp.extensions"
 
 // The url for the raw files hosted
-let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/tjaskula"
+let gitRaw = Environment.environVarOrDefault "gitRaw" "https://raw.github.com/tjaskula"
 
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
 
 // Read additional information from the release notes document
-let release = LoadReleaseNotes "RELEASE_NOTES.md"
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
-// Generate assembly info files with the right version & up-to-date information
-Target "AssemblyInfo" <| fun _ ->
+// Generate assembly info files with the right version & up-to-date information       
+Target.create "AssemblyInfo" (fun _ ->
     let setProjectDetails project = 
-        XmlPokeInnerText project "//Project/PropertyGroup/Version" release.AssemblyVersion    
-        XmlPokeInnerText project "//Project/PropertyGroup/PackageReleaseNotes" (release.Notes |> String.concat "\n")
-
+        Xml.pokeInnerText project "//Project/PropertyGroup/Version" release.AssemblyVersion    
+        Xml.pokeInnerText project "//Project/PropertyGroup/PackageReleaseNotes" (release.Notes |> String.concat "\n")
     !! "src/**/*.fsproj" |> Seq.iter setProjectDetails
+)
 
 // Copies binaries from default VS location to expected bin folder
 // But keeps a subdirectory structure for each project in the 
 // src folder to support multiple project outputs
-Target "CopyBinaries" (fun _ ->
+Target.create "CopyBinaries" (fun _ ->
     !! "src/**/*.??proj"
     |>  Seq.map (fun f -> ((System.IO.Path.GetDirectoryName f) @@ "bin/Release", "bin" @@ (System.IO.Path.GetFileNameWithoutExtension f)))
-    |>  Seq.iter (fun (fromDir, toDir) -> CopyDir toDir fromDir (fun _ -> true))
+    |>  Seq.iter (fun (fromDir, toDir) -> Shell.copyDir toDir fromDir (fun _ -> true))
 )
 
 // --------------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"]
+Target.create "Clean" (fun _ ->
+    Shell.cleanDirs ["bin"; "temp"]
 )
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
-
-Target "Build" (fun _ ->
+Target.create "Build" (fun _ ->
     !! solutionFile
-    |> MSBuildRelease "" "Rebuild"
+    |> MSBuild.runRelease id "" "Rebuild"
     |> ignore
 )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
-open Fake.Testing.XUnit2
-Target "RunTests" (fun _ ->
+open Fake.DotNet.Testing
+
+open Fake.DotNet.Testing.XUnit2
+Target.create "RunTests" (fun _ ->
     !! testAssemblies
-    |> xUnit2 (fun p ->
+    |> XUnit2.run (fun p ->
         { p with
-            TimeOut = TimeSpan.FromMinutes 20.
+            TimeOut = System.TimeSpan.FromMinutes 20.
             XmlOutputPath = Some "TestResults.xml"
             ToolPath = "packages/xunit.runner.console/tools/net452/xunit.console.exe" })
 )
@@ -110,50 +128,54 @@ Target "RunTests" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" <| fun _ ->
-    let pack project = 
-        DotNetCli.Pack(fun p -> 
+Target.create "NuGet" <| fun _ ->
+    let pack = 
+        DotNet.pack(fun p -> 
             { p with
-                Project = project
-                OutputPath = "bin"
-                Configuration = "Release"
-                AdditionalArgs = ["--include-symbols"] })
+                OutputPath = Some "bin"
+                Configuration = DotNet.Release
+                Common = { p.Common with CustomParams = Some "--include-symbols" }})
     
     !! "src/**/*.fsproj" |> Seq.iter pack
 
 
-Target "PublishNuget" (fun _ ->
-    Paket.Push(fun p -> 
+Target.create "PublishNuget" (fun _ ->
+    Paket.push(fun p -> 
         { p with
             WorkingDir = "bin"
             DegreeOfParallelism = 1 })
 )
 
-#load "paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+(*
+#load ".fake/build.fsx/paket-files/fsharp/FAKE/modules/Octokit/Octokit.fsx"
+*)
 open Octokit
+open Fake.Tools
+open Fake.Api
+open Fake.DotNet
 
-Target "Release" (fun _ ->
-    StageAll ""
-    Git.Commit.Commit "" (sprintf "Bump version to %s" release.NugetVersion)
-    Branches.push ""
+Target.create "Release" (fun _ ->
+    Git.Staging.stageAll ""
+    Git.Commit.exec "" (sprintf "Bump version to %s" release.NugetVersion)
+    Git.Branches.push ""
 
-    Branches.tag "" release.NugetVersion
-    Branches.pushTag "" "origin" release.NugetVersion
+    Git.Branches.tag "" release.NugetVersion
+    Git.Branches.pushTag "" "origin" release.NugetVersion
     
     // release on github
-    createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
-    |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
+    GitHub.createClient (Environment.environVarOrDefault "github-user" "") (Environment.environVarOrDefault "github-pw" "")
+    |> GitHub.draftNewRelease gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes 
     // TODO: |> uploadFile "PATH_TO_FILE"    
-    |> releaseDraft
+    |> GitHub.publishDraft
     |> Async.RunSynchronously
 )
 
-Target "BuildPackage" DoNothing
+Target.create "BuildPackage" (fun _ -> ())
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
-
-Target "All" DoNothing
+open Fake.Core.TargetOperators
+Target.create "All" (fun _ -> ())
 
 "Clean"
   ==> "AssemblyInfo"
@@ -165,4 +187,4 @@ Target "All" DoNothing
   ==> "NuGet"
   ==> "BuildPackage"
 
-RunTargetOrDefault "All"
+Target.runOrDefault "All"
