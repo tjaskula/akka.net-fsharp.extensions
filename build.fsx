@@ -114,12 +114,13 @@ Target.create "Build" (fun _ ->
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner
-// Doesn't work because of the issue https://github.com/fsharp/FAKE/issues/2094
 open Fake.DotNet.Testing
 
 open Fake.DotNet
 
 open Fake.DotNet.Testing.XUnit2
+open Fake.Testing.Common
+
 Target.create "RunTests" (fun _ ->
     !! testAssemblies
     |> XUnit2.run (fun p ->
@@ -196,7 +197,7 @@ Target.create "All" (fun _ -> ())
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
-  //==> "RunTests"
+  ==> "RunTests"
   ==> "RunDotNetCoreTests"
   ==> "All"
 
