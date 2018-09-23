@@ -126,7 +126,7 @@ Target.create "RunTests" (fun _ ->
         { p with
             TimeOut = System.TimeSpan.FromMinutes 20.
             XmlOutputPath = Some "TestResults.xml"
-            ToolPath = "~/.nuget/packages/xunit.runner.console/2.4.0/tools/net452/xunit.console.exe"})
+            ToolPath = System.Environment.ExpandEnvironmentVariables("%HOME%/.nuget/packages/xunit.runner.console/2.4.0/tools/net452/xunit.console.exe")})
 )
 
 //---------------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ Target.create "All" (fun _ -> ())
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
-  //==> "RunTests"
+  ==> "RunTests"
   ==> "RunDotNetCoreTests"
   ==> "All"
 
