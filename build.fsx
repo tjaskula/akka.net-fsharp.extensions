@@ -101,7 +101,7 @@ Target.create "CopyBinaries" (fun _ ->
 // Clean build results
 
 Target.create "Clean" (fun _ ->
-    Shell.cleanDirs ["bin"; "temp"]
+    Shell.cleanDirs ["bin"]
 )
 
 // --------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ Target.create "RunDotNetCoreTests" (fun _ ->
             Framework = Some "netcoreapp2.1"
             Configuration = DotNet.BuildConfiguration.fromString "Release"
             NoBuild = true})
-        "src/Akka.FSharp.Extensions.Tests/Akka.FSharp.Extensions.Tests.fsproj"
+        "tests/Akka.FSharp.Extensions.Tests/Akka.FSharp.Extensions.Tests.fsproj"
 )
 
 // --------------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ Target.create "All" (fun _ -> ())
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
-  ==> "RunTests"
+  //==> "RunTests"
   ==> "RunDotNetCoreTests"
   ==> "All"
 
