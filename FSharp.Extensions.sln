@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{9860
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions", "src\Akka.FSharp.Extensions\Akka.FSharp.Extensions.fsproj", "{7437E4E4-E286-4A46-91D1-E3F2497B46F9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions.Tests", "src\Akka.FSharp.Extensions.Tests\Akka.FSharp.Extensions.Tests.fsproj", "{43383D16-FEA4-4987-9321-4EAD98448DC9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Akka.FSharp.Extensions.Tests", "tests\Akka.FSharp.Extensions.Tests\Akka.FSharp.Extensions.Tests.fsproj", "{43383D16-FEA4-4987-9321-4EAD98448DC9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{8FB199FD-4323-4954-9C8C-B09344601EAB}"
 ProjectSection(SolutionItems) = preProject
